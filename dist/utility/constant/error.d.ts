@@ -1,0 +1,7 @@
+export declare enum ErrorType {
+    "CONTEXT-ERROR" = "CONTEXT-ERROR",
+    "CORE-ERROR" = "CORE-ERROR",
+    "DOMAIN-ERROR" = "DOMAIN-ERROR",
+    "POLICY-ERROR" = "POLICY-ERROR",
+    "JSON-SCHEMA-ERROR" = "JSON-SCHEMA-ERROR"
+}

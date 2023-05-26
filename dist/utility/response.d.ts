@@ -1,0 +1,10 @@
+export declare const on_select: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_search: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_status: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_rating: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_track: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_update: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_support: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_init: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_cancel: (method: string, baseUrl: string, body: any) => Promise<any>;
+export declare const on_confirm: (method: string, baseUrl: string, body: any) => Promise<any>;
