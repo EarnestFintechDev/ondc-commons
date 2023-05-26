@@ -35,58 +35,73 @@ export class Payments {
   };
   @Documentation.addField({ type: "string" })
   type?: orderStatus | null;
+
   @Documentation.addField({ type: "string" })
   status?: paymentStatus | null;
+
   @Documentation.addField({ $ref: Documentation.getRef(Time) })
   time?: Time;
+
   @Documentation.addField({ type: "string", description: " BAP,BPP" })
   collected_by?: collectedBy | null;
+
   @Documentation.addField({
     type: "string",
     enum: ["Assert", "Agree", "Disagree", "Terminate"]
   })
   "@ondc/org/collected_by_status"?: confirmStatus
+
   @Documentation.addField({
     type: "string",
     enum: ["Amount", "Percent"]
   })
   "@ondc/org/buyer_app_finder_fee_type"?: feeType
+
   @Documentation.addField({ type: "string" })
   "@ondc/org/buyer_app_finder_fee_amount"?: string
+
   @Documentation.addField({
     type: "string",
     enum: ["Assert", "Agree", "Disagree", "Terminate"]
   })
   "@ondc/org/withholding_amount"?: string
+
   @Documentation.addField({
     type: "string",
     enum: ["Assert", "Agree", "Disagree", "Terminate"]
   })
   "@ondc/org/withholding_amount_status"?: confirmStatus
+
   @Documentation.addField({ type: "string" })
   "@ondc/org/return_window"?: string
+
   @Documentation.addField({
     type: "string",
     enum: ["Assert", "Agree", "Disagree", "Terminate"]
   })
   "@ondc/org/return_window_status"?: confirmStatus
+
   @Documentation.addField({
     type: "string",
     enum: ["Collection", "Shipment", "Delivery"]
   })
   "@ondc/org/settlement_basis"?: settlementBasis
+
   @Documentation.addField({
     type: "string",
     enum: ["Assert", "Agree", "Disagree", "Terminate"]
   })
   "@ondc/org/settlement_basis_status"?: confirmStatus
+
   @Documentation.addField({ type: "string" })
   "@ondc/org/settlement_window"?: string
+
   @Documentation.addField({
     type: "string",
     enum: ["Assert", "Agree", "Disagree", "Terminate"]
   })
   "@ondc/org/settlement_window_status"?: confirmStatus
+
   @Documentation.addField({
     type: "object",
     properties: {

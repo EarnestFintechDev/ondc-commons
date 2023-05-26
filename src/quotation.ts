@@ -1,7 +1,6 @@
 import { Documentation } from "@smoke-trees/postgres-backend";
-import { Break } from "./break";
-import { Quotation as quotation } from "./common";
 import { Price } from "./Price";
+import { Break } from "./break";
 @Documentation.addSchema({ type: "object" })
 export class Quotation {
   /**
