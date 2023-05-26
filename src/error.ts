@@ -1,5 +1,5 @@
 import { Documentation } from "@smoke-trees/postgres-backend";
-import { Context } from "./utility/constant/error";
+import { ErrorType } from "./utility/constant/error";
 
 @Documentation.addSchema({ type:"object"})
 export class Errors{
@@ -11,14 +11,14 @@ export class Errors{
    * @param {string} message - Human readable message describing the error.
    */
   @Documentation.addField({ type:"string"})
-  type: Context;
+  type: ErrorType;
   @Documentation.addField({type:"string"})
   code: string;
   @Documentation.addField({type:"string"})
   path: string;
   @Documentation.addField({type:"string"})
   message: string;
-  constructor(type:Context,code: string, path: string, message: string)
+  constructor(type: ErrorType, code: string, path: string, message: string)
   {
     this.code = code;
     this.type=type;

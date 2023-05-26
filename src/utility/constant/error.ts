@@ -1,4 +1,4 @@
-export enum Context {
+export enum ErrorType {
   "CONTEXT-ERROR" = "CONTEXT-ERROR",
   "CORE-ERROR" = "CORE-ERROR",
   "DOMAIN-ERROR" = "DOMAIN-ERROR",
