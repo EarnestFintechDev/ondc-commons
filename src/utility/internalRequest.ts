@@ -9,8 +9,15 @@ export const internalRequest = async (url: string, method: string, body?: any, o
         body: body,
         headers: {
             ...options?.headers,
-            'bap-uri': context.values?.bap_uri
-        } 
+            'ondc-bap-uri': context.values?.bap_uri,
+            'ondc-domain': context.values?.domain,
+            'ondc-action': context.values?.action,
+            'ondc-protocol-version': context.values?.version,
+            'ondc-bap-id': context.values?.bap_id,
+            'ondc-transaction-id': context.values?.transaction_id,
+            'ondc-message-id': context.values?.message_id,
+            'ondc-timestamp': context.values?.timestamp
+        }
     };
     return await fetch(url, option)
         .then((response) => {
