@@ -32,22 +32,22 @@ export class Billing {
   @Documentation.addField({ type: "string" })
   name: string;
   @Documentation.addField({ $ref: Documentation.getRef(Organization) })
-  organization: Organization;
+  organization?: Organization;
   @Documentation.addField({ $ref: Documentation.getRef(Address) })
-  address: Address;
+  address?: Address;
   @Documentation.addField({ type: "string" })
-  email: string | null;
+  email?: string | null;
   @Documentation.addField({ type: "string" })
-  phone: string | null;
+  phone?: string | null;
   @Documentation.addField({ $ref: Documentation.getRef(Time) })
-  time: Time | null;
+  time?: Time | null;
   constructor(
     name: string,
-    address: Address,
-    email: string,
-    time: Time,
-    phone: string,
-    organization: Organization
+    address?: Address,
+    email?: string,
+    time?: Time,
+    phone?: string,
+    organization?: Organization
   ) {
     this.name = name;
     this.address = address;
