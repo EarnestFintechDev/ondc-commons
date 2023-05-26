@@ -4,7 +4,7 @@ import { FeedbackForms } from "../feedbackForm";
 import { Order } from "../order";
 
 @Documentation.addSchema({ type: "object" })
-export class Rating {
+export class RatingApi {
   @Documentation.addField({ $ref: Documentation.getRef(Context) })
   context: Context;
   @Documentation.addField({type: "object",properties: {

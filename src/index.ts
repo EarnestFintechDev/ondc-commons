@@ -61,3 +61,14 @@ export * from './time';
 export * from './trackingData';
 export * from './tracking';
 export * from './vehicle';
+export * from './main/cancel'
+export * from './main/confirm'
+export * from './main/init'
+export * from './main/rating'
+export * from './main/response'
+export * from './main/search'
+export * from './main/select'
+export * from './main/status'
+export * from './main/support'
+export * from './main/track'
+export * from './main/update'
