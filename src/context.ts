@@ -21,7 +21,7 @@ export enum City {
 }
 export enum Action {
   "search"="search",
-  "select" ="search",
+  "select" = "select",
   "init" ="init",
   "confirm"="confirm",
   "update" ="update",

@@ -34,7 +34,7 @@ var City;
 var Action;
 (function (Action) {
     Action["search"] = "search";
-    Action["select"] = "search";
+    Action["select"] = "select";
     Action["init"] = "init";
     Action["confirm"] = "confirm";
     Action["update"] = "update";
