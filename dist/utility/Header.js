@@ -57,10 +57,8 @@ var getHeader = function (body) { return __awaiter(void 0, void 0, void 0, funct
                 UKID = process.env.UNIQUEKEYID;
                 algorithm = process.env.ALGORITHM;
                 header = {
-                    "host": process.env.LOCALHOST,
                     "accept": "application/json",
                     "authorization": "Signature keyId=\"".concat(subscriber_id, "|").concat(UKID, "|").concat(algorithm, "\",algorithm=\"ed25519\",created=").concat(created, ",expires=").concat(expires, ",headers=\"(created) (expires) digest\",signature=\"").concat(digest_base64, "\""),
-                    'user-agent': "ReactorNetty/1.0.19",
                     'content-type': 'application/json',
                 };
                 postgres_backend_1.log.debug("Looking for header  before return in utility/header.ts -> ", "getHeader()", { header: header });
