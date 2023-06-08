@@ -1,9 +1,12 @@
 import { log } from '@smoke-trees/postgres-backend';
 import { createSigningString } from './verifySignature';
+import _sodium from 'libsodium-wrappers'
 
 export const getHeader = async (body: any) => {
+  await _sodium.ready
+  const sodium = _sodium
   log.debug('Looking for body in utility/header.ts -> ', body);
-  const { created, expires, digest_base64 } = await createSigningString(body, '', '');
+  const { created, expires, digest_base64, signing_string } = await createSigningString(body, '', '');
   log.debug(
     'Looking for digest after calling createSigningString in utility/header.ts -> ',
     JSON.stringify({
@@ -16,6 +19,15 @@ export const getHeader = async (body: any) => {
   const subscriber_id: any = process.env.SUBSCRIBERID;
   const UKID: any = process.env.UNIQUEKEYID;
   const algorithm: any = process.env.ALGORITHM;
+  const signingKey = process.env.SIGNING_KEY ?? ''
+
+  const signature = sodium.to_base64(sodium.crypto_sign_detached(
+    signing_string,
+    sodium.from_base64(signingKey, sodium.base64_variants.ORIGINAL)
+  ), sodium.base64_variants.ORIGINAL)
+
+
+
   const header = {
     "accept": "application/json",
     "authorization": `Signature keyId="${subscriber_id}|${UKID}|${algorithm}",algorithm="ed25519",created=${created},expires=${expires},headers="(created) (expires) digest",signature="${digest_base64}"`,
