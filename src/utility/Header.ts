@@ -6,12 +6,12 @@ export const getHeader = async (body: any) => {
   await _sodium.ready
   const sodium = _sodium
   log.debug('Looking for body in utility/header.ts -> ', body);
-  const { created, expires, digest_base64 } = await createSigningString(body, '', '');
+  const { created, expires, signing_string } = await createSigningString(body, '', '');
   log.debug(
     'Looking for digest after calling createSigningString in utility/header.ts -> ',
     'getHeader',
     {
-      signatureString: digest_base64,
+      signatureString: signing_string,
       created: created,
       expires: expires
     }
@@ -23,7 +23,7 @@ export const getHeader = async (body: any) => {
   const signingKey = process.env.SIGNING_KEY ?? ''
 
   const signature = sodium.to_base64(sodium.crypto_sign_detached(
-    digest_base64,
+    signing_string,
     sodium.from_base64(signingKey, sodium.base64_variants.ORIGINAL)
   ), sodium.base64_variants.ORIGINAL)
 

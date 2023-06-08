@@ -44,7 +44,7 @@ var postgres_backend_1 = require("@smoke-trees/postgres-backend");
 var verifySignature_1 = require("./verifySignature");
 var libsodium_wrappers_1 = __importDefault(require("libsodium-wrappers"));
 var getHeader = function (body) { return __awaiter(void 0, void 0, void 0, function () {
-    var sodium, _a, created, expires, digest_base64, subscriber_id, UKID, algorithm, signingKey, signature, header;
+    var sodium, _a, created, expires, signing_string, subscriber_id, UKID, algorithm, signingKey, signature, header;
     var _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
@@ -55,9 +55,9 @@ var getHeader = function (body) { return __awaiter(void 0, void 0, void 0, funct
                 postgres_backend_1.log.debug('Looking for body in utility/header.ts -> ', body);
                 return [4 /*yield*/, (0, verifySignature_1.createSigningString)(body, '', '')];
             case 2:
-                _a = _c.sent(), created = _a.created, expires = _a.expires, digest_base64 = _a.digest_base64;
+                _a = _c.sent(), created = _a.created, expires = _a.expires, signing_string = _a.signing_string;
                 postgres_backend_1.log.debug('Looking for digest after calling createSigningString in utility/header.ts -> ', 'getHeader', {
-                    signatureString: digest_base64,
+                    signatureString: signing_string,
                     created: created,
                     expires: expires
                 });
@@ -65,7 +65,7 @@ var getHeader = function (body) { return __awaiter(void 0, void 0, void 0, funct
                 UKID = process.env.UNIQUEKEYID;
                 algorithm = process.env.ALGORITHM;
                 signingKey = (_b = process.env.SIGNING_KEY) !== null && _b !== void 0 ? _b : '';
-                signature = sodium.to_base64(sodium.crypto_sign_detached(digest_base64, sodium.from_base64(signingKey, sodium.base64_variants.ORIGINAL)), sodium.base64_variants.ORIGINAL);
+                signature = sodium.to_base64(sodium.crypto_sign_detached(signing_string, sodium.from_base64(signingKey, sodium.base64_variants.ORIGINAL)), sodium.base64_variants.ORIGINAL);
                 header = {
                     "accept": "application/json",
                     "authorization": "Signature keyId=\"".concat(subscriber_id, "|").concat(UKID, "|").concat(algorithm, "\",algorithm=\"ed25519\",created=").concat(created, ",expires=").concat(expires, ",headers=\"(created) (expires) digest\",signature=\"").concat(signature, "\""),

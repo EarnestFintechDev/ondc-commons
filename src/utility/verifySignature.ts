@@ -44,6 +44,7 @@ const verifyHeader = async (headerParts: any, body: object, public_key: string) 
     headerParts['expires']
   );
 
+
   const verified = await verifyMessage(headerParts['signature'], signing_string, public_key);
 
   return verified;
