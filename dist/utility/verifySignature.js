@@ -104,6 +104,9 @@ var getProviderPublicKey = function (providers, keyId) { return __awaiter(void 0
     var provider;
     return __generator(this, function (_a) {
         try {
+            return [2 /*return*/, providers[0].signing_public_key
+                // console.log(providers)
+            ];
             provider = lodash_1.default.find(providers, function (obj) { return obj.ukId == keyId && obj; });
             // console.log(provider)
             return [2 /*return*/, (provider === null || provider === void 0 ? void 0 : provider.signing_public_key) || false];
@@ -120,12 +123,13 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                body = { subscriber_id: subscriber_id, domain: domain };
+                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
                 return [4 /*yield*/, axios_1.default.post(process.env.GATEWAY_LOOKUP_URL || '', body)];
             case 1:
                 response = _a.sent();
                 if (!response)
                     return [2 /*return*/, false];
+                console.log(response.data);
                 return [4 /*yield*/, getProviderPublicKey(response.data, unique_key_id)];
             case 2:
                 public_key = _a.sent();

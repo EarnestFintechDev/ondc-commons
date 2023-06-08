@@ -52,6 +52,7 @@ const verifyHeader = async (headerParts: any, body: object, public_key: string) 
 
 const getProviderPublicKey = async (providers: any, keyId: string) => {
   try {
+    return providers[0].signing_public_key
     // console.log(providers)
     const provider = _.find(providers, (obj: any) => obj.ukId == keyId && obj);
     // console.log(provider)
@@ -63,12 +64,13 @@ const getProviderPublicKey = async (providers: any, keyId: string) => {
 
 const lookupRegistry = async (subscriber_id: string, unique_key_id: string, domain: string) => {
   try {
-    const body = { subscriber_id: subscriber_id, domain };
+    const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
 
     const response = await axios.post(process.env.GATEWAY_LOOKUP_URL || '', body);
 
     if (!response) return false;
 
+    console.log(response.data)
     const public_key = await getProviderPublicKey(response.data, unique_key_id);
     if (!public_key) {
       log.debug("No public key found", 'lookup registry', { domain, subscriber_id, unique_key_id })

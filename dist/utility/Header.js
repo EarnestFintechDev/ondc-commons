@@ -68,7 +68,7 @@ var getHeader = function (body) { return __awaiter(void 0, void 0, void 0, funct
                 signature = sodium.to_base64(sodium.crypto_sign_detached(signing_string, sodium.from_base64(signingKey, sodium.base64_variants.ORIGINAL)), sodium.base64_variants.ORIGINAL);
                 header = {
                     "accept": "application/json",
-                    "authorization": "Signature keyId=\"".concat(subscriber_id, "|").concat(UKID, "|").concat(algorithm, "\",algorithm=\"ed25519\",created=").concat(created, ",expires=").concat(expires, ",headers=\"(created) (expires) digest\",signature=\"").concat(signature, "\""),
+                    "authorization": "Signature keyId=\"".concat(subscriber_id, "|").concat(UKID, "|").concat(algorithm, "\",algorithm=\"ed25519\",created=\"").concat(created, "\",expires=\"").concat(expires, "\",headers=\"(created) (expires) digest\",signature=\"").concat(signature, "\""),
                     'content-type': 'application/json',
                 };
                 postgres_backend_1.log.debug("Looking for header  before return in utility/header.ts -> ", "getHeader()", { header: header });
