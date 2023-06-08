@@ -13,7 +13,7 @@ export const FetchRequest = async (url: string, method:string, body: any) => {
   const option:object = {
     method: method,
     headers: Header,
-    body: JSON.stringify(body),
+    body: body,
   };
   return await fetch(url, option)
     .then((response) => {

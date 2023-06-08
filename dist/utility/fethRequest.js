@@ -57,7 +57,7 @@ var FetchRequest = function (url, method, body) { return __awaiter(void 0, void 
                 option = {
                     method: method,
                     headers: Header,
-                    body: JSON.stringify(body),
+                    body: body,
                 };
                 return [4 /*yield*/, (0, node_fetch_1.default)(url, option)
                         .then(function (response) {

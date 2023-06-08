@@ -6,14 +6,15 @@ export const getHeader = async (body: any) => {
   await _sodium.ready
   const sodium = _sodium
   log.debug('Looking for body in utility/header.ts -> ', body);
-  const { created, expires, digest_base64, signing_string } = await createSigningString(body, '', '');
+  const { created, expires, digest_base64 } = await createSigningString(body, '', '');
   log.debug(
     'Looking for digest after calling createSigningString in utility/header.ts -> ',
-    JSON.stringify({
-      digest: digest_base64,
-      creted: created,
+    'getHeader',
+    {
+      signatureString: digest_base64,
+      created: created,
       expires: expires
-    })
+    }
   );
 
   const subscriber_id: any = process.env.SUBSCRIBERID;
@@ -22,7 +23,7 @@ export const getHeader = async (body: any) => {
   const signingKey = process.env.SIGNING_KEY ?? ''
 
   const signature = sodium.to_base64(sodium.crypto_sign_detached(
-    signing_string,
+    digest_base64,
     sodium.from_base64(signingKey, sodium.base64_variants.ORIGINAL)
   ), sodium.base64_variants.ORIGINAL)
 
@@ -33,6 +34,6 @@ export const getHeader = async (body: any) => {
     "authorization": `Signature keyId="${subscriber_id}|${UKID}|${algorithm}",algorithm="ed25519",created=${created},expires=${expires},headers="(created) (expires) digest",signature="${signature}"`,
     'content-type': 'application/json',
   };
-  log.debug("Looking for header  before return in utility/header.ts -> ","getHeader()",{header});
+  log.debug("Looking for header  before return in utility/header.ts -> ", "getHeader()", { header });
   return header;
 };

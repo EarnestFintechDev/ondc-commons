@@ -167,6 +167,7 @@ var verifySignature = function (header, body) { return __awaiter(void 0, void 0,
                 domain = body.context.domain;
                 postgres_backend_1.log.debug("Verify Domain", 'verifySignature', { header: header, body: body });
                 headerParts = split_auth_header(header);
+                postgres_backend_1.log.debug('headerParts', 'verifySignature', { headerParts: headerParts });
                 keyIdSplit = headerParts['keyId'].split('|');
                 subscriber_id = keyIdSplit[0];
                 unique_key_id = keyIdSplit[1];

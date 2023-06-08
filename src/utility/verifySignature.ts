@@ -105,6 +105,7 @@ export const verifySignature = async (header: any, body: any) => {
     log.debug("Verify Domain", 'verifySignature', { header, body })
 
     const headerParts = split_auth_header(header);
+    log.debug('headerParts', 'verifySignature', { headerParts })
 
     const keyIdSplit = headerParts['keyId'].split('|');
     const subscriber_id = keyIdSplit[0];
