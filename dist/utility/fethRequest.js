@@ -44,39 +44,12 @@ var postgres_backend_1 = require("@smoke-trees/postgres-backend");
 var node_fetch_1 = __importDefault(require("node-fetch"));
 var Header_1 = require("./Header");
 var FetchRequest = function (url, method, body) { return __awaiter(void 0, void 0, void 0, function () {
-    var dummyBody, Header, option;
+    var Header, option;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 postgres_backend_1.log.debug("Looking for body in utility/fetchRequest.ts -> ", body);
-                dummyBody = {
-                    context: {
-                        domain: "nic2004:52110",
-                        country: "IND",
-                        city: "std:080",
-                        action: "search",
-                        core_version: "1.0.0",
-                        bap_id: "buyer-app.ondc.org",
-                        bap_uri: "https://buyer-app.ondc.org/protocol/v1",
-                        transaction_id: "e594b216-7ea2-4ddd-baba-caf6074344b4",
-                        message_id: "cc468d26-71b2-4a08-b5f4-156843e98240",
-                        timestamp: "2022-11-16T08:27:05.022Z",
-                        ttl: "PT30S",
-                    },
-                    message: {
-                        intent: {
-                            item: { descriptor: { name: "milk" } },
-                            fulfillment: {
-                                type: "Delivery",
-                                end: { location: { gps: "12.96774,77.588913" } },
-                            },
-                            payment: {
-                                "@ondc/org/buyer_app_finder_fee_type": "Percent",
-                                "@ondc/org/buyer_app_finder_fee_amount": "3.0",
-                            },
-                        },
-                    },
-                };
+                body = JSON.stringify(body);
                 return [4 /*yield*/, (0, Header_1.getHeader)(body)];
             case 1:
                 Header = _a.sent();
