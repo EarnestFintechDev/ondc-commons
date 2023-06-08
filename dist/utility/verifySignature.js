@@ -43,6 +43,7 @@ exports.verifySignature = exports.createSigningString = void 0;
 var axios_1 = __importDefault(require("axios"));
 var lodash_1 = __importDefault(require("lodash"));
 var libsodium_wrappers_1 = __importDefault(require("libsodium-wrappers"));
+var postgres_backend_1 = require("@smoke-trees/postgres-backend");
 var createSigningString = function (message, created, expires) { return __awaiter(void 0, void 0, void 0, function () {
     var sodium, digest, digest_base64, signing_string;
     return __generator(this, function (_a) {
@@ -65,20 +66,21 @@ var createSigningString = function (message, created, expires) { return __awaite
 }); };
 exports.createSigningString = createSigningString;
 var verifyMessage = function (signedString, signingString, publicKey) { return __awaiter(void 0, void 0, void 0, function () {
-    var sodium, result, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var sodium, privateKey, result, err_1;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
+                _b.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, libsodium_wrappers_1.default.ready];
             case 1:
-                _a.sent();
+                _b.sent();
                 sodium = libsodium_wrappers_1.default;
+                privateKey = (_a = process.env.SIGNING_KEY) !== null && _a !== void 0 ? _a : '';
                 result = sodium.crypto_sign_verify_detached(sodium.from_base64(signedString, libsodium_wrappers_1.default.base64_variants.ORIGINAL), signingString, sodium.from_base64(publicKey, libsodium_wrappers_1.default.base64_variants.ORIGINAL));
-                console.log(36, result);
                 return [2 /*return*/, result];
             case 2:
-                err_1 = _a.sent();
+                err_1 = _b.sent();
                 return [2 /*return*/, false];
             case 3: return [2 /*return*/];
         }
@@ -91,11 +93,6 @@ var verifyHeader = function (headerParts, body, public_key) { return __awaiter(v
             case 0: return [4 /*yield*/, (0, exports.createSigningString)(JSON.stringify(body), headerParts['created'], headerParts['expires'])];
             case 1:
                 signing_string = (_a.sent()).signing_string;
-                console.log('line 49', {
-                    signature: headerParts['signature'],
-                    signing_string: signing_string,
-                    key: public_key
-                });
                 return [4 /*yield*/, verifyMessage(headerParts['signature'], signing_string, public_key)];
             case 2:
                 verified = _a.sent();
@@ -117,15 +114,14 @@ var getProviderPublicKey = function (providers, keyId) { return __awaiter(void 0
         return [2 /*return*/];
     });
 }); };
-var lookupRegistry = function (subscriber_id, unique_key_id) { return __awaiter(void 0, void 0, void 0, function () {
+var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __awaiter(void 0, void 0, void 0, function () {
     var body, response, public_key, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                body = { subscriber_id: subscriber_id, type: 'BAP', domain: 'nic2004:52110' };
-                console.log('line 69', body);
-                return [4 /*yield*/, axios_1.default.post('https://pilot-gateway-1.beckn.nsdl.co.in/lookup', body)];
+                body = { subscriber_id: subscriber_id, domain: domain };
+                return [4 /*yield*/, axios_1.default.post(process.env.GATEWAY_LOOKUP_URL || '', body)];
             case 1:
                 response = _a.sent();
                 if (!response)
@@ -133,12 +129,14 @@ var lookupRegistry = function (subscriber_id, unique_key_id) { return __awaiter(
                 return [4 /*yield*/, getProviderPublicKey(response.data, unique_key_id)];
             case 2:
                 public_key = _a.sent();
-                console.log('78', public_key);
-                if (!public_key)
+                if (!public_key) {
+                    postgres_backend_1.log.debug("No public key found", 'lookup registry', { domain: domain, subscriber_id: subscriber_id, unique_key_id: unique_key_id });
                     return [2 /*return*/, false];
+                }
                 return [2 /*return*/, public_key];
             case 3:
                 err_2 = _a.sent();
+                postgres_backend_1.log.error("Error in lookup", 'lookupRegistry', err_2, { subscriber_id: subscriber_id, unique_key_id: unique_key_id, domain: domain });
                 return [2 /*return*/, false];
             case 4: return [2 /*return*/];
         }
@@ -160,21 +158,21 @@ var split_auth_header = function (auth_header) {
     return parts;
 };
 var verifySignature = function (header, body) { return __awaiter(void 0, void 0, void 0, function () {
-    var isValid, headerParts, keyIdSplit, subscriber_id, unique_key_id, algorithm, public_key, err_3;
+    var isValid, domain, headerParts, keyIdSplit, subscriber_id, unique_key_id, algorithm, public_key, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 4, , 5]);
                 isValid = false;
+                domain = body.context.domain;
+                postgres_backend_1.log.debug("Verify Domain", 'verifySignature', { header: header, body: body });
                 headerParts = split_auth_header(header);
                 keyIdSplit = headerParts['keyId'].split('|');
                 subscriber_id = keyIdSplit[0];
                 unique_key_id = keyIdSplit[1];
                 algorithm = keyIdSplit[2];
-                console.log(algorithm === headerParts.algorithm);
-                console.log('line 119', headerParts['signature']);
                 if (!(algorithm === headerParts.algorithm)) return [3 /*break*/, 3];
-                return [4 /*yield*/, lookupRegistry(subscriber_id, unique_key_id)];
+                return [4 /*yield*/, lookupRegistry(subscriber_id, unique_key_id, domain)];
             case 1:
                 public_key = _a.sent();
                 if (!public_key) return [3 /*break*/, 3];
@@ -185,6 +183,7 @@ var verifySignature = function (header, body) { return __awaiter(void 0, void 0,
             case 3: return [2 /*return*/, isValid];
             case 4:
                 err_3 = _a.sent();
+                postgres_backend_1.log.error('Error in verify signature', 'verifySignature', err_3, { header: header, body: body });
                 return [2 /*return*/, false];
             case 5: return [2 /*return*/];
         }

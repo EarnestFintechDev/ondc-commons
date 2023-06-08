@@ -1,6 +1,7 @@
 import axios from 'axios';
 import _ from 'lodash';
 import _sodium from 'libsodium-wrappers';
+import { log } from '@smoke-trees/postgres-backend';
 
 export const createSigningString = async (message: string, created: string, expires: string) => {
   if (!created) created = Math.floor(new Date().getTime() / 1000).toString();
@@ -23,13 +24,13 @@ const verifyMessage = async (signedString: string, signingString: string, public
   try {
     await _sodium.ready;
     const sodium = _sodium;
+    const privateKey = process.env.SIGNING_KEY ?? ''
 
     const result = sodium.crypto_sign_verify_detached(
       sodium.from_base64(signedString, _sodium.base64_variants.ORIGINAL),
       signingString,
       sodium.from_base64(publicKey, _sodium.base64_variants.ORIGINAL)
     );
-    console.log(36, result);
     return result;
   } catch (err) {
     return false;
@@ -42,11 +43,7 @@ const verifyHeader = async (headerParts: any, body: object, public_key: string) 
     headerParts['created'],
     headerParts['expires']
   );
-  console.log('line 49', {
-    signature: headerParts['signature'],
-    signing_string: signing_string,
-    key: public_key
-  });
+
   const verified = await verifyMessage(headerParts['signature'], signing_string, public_key);
 
   return verified;
@@ -63,21 +60,23 @@ const getProviderPublicKey = async (providers: any, keyId: string) => {
   }
 };
 
-const lookupRegistry = async (subscriber_id: string, unique_key_id: string) => {
+const lookupRegistry = async (subscriber_id: string, unique_key_id: string, domain: string) => {
   try {
-    const body = { subscriber_id: subscriber_id, type: 'BAP', domain: 'nic2004:52110' };
-    console.log('line 69', body);
+    const body = { subscriber_id: subscriber_id, domain };
 
-    const response = await axios.post('https://pilot-gateway-1.beckn.nsdl.co.in/lookup', body);
+    const response = await axios.post(process.env.GATEWAY_LOOKUP_URL || '', body);
 
     if (!response) return false;
 
     const public_key = await getProviderPublicKey(response.data, unique_key_id);
-    console.log('78', public_key);
-    if (!public_key) return false;
+    if (!public_key) {
+      log.debug("No public key found", 'lookup registry', { domain, subscriber_id, unique_key_id })
+      return false;
+    }
 
     return public_key;
   } catch (err) {
+    log.error("Error in lookup", 'lookupRegistry', err, { subscriber_id, unique_key_id, domain })
     return false;
   }
 };
@@ -98,9 +97,12 @@ const split_auth_header = (auth_header: any) => {
   }
   return parts;
 };
+
 export const verifySignature = async (header: any, body: any) => {
   try {
     let isValid: boolean | undefined = false;
+    const domain = body.context.domain
+    log.debug("Verify Domain", 'verifySignature', { header, body })
 
     const headerParts = split_auth_header(header);
 
@@ -109,16 +111,19 @@ export const verifySignature = async (header: any, body: any) => {
     const unique_key_id = keyIdSplit[1];
     const algorithm = keyIdSplit[2];
 
-    console.log(algorithm === headerParts.algorithm);
-    console.log('line 119', headerParts['signature']);
 
     if (algorithm === headerParts.algorithm) {
-      const public_key = await lookupRegistry(subscriber_id, unique_key_id);
-
+      const public_key = await lookupRegistry(subscriber_id, unique_key_id, domain);
       if (public_key) isValid = await verifyHeader(headerParts, body, public_key);
     }
     return isValid;
   } catch (err) {
+    log.error(
+      'Error in verify signature',
+      'verifySignature',
+      err,
+      { header, body }
+    )
     return false;
   }
 };

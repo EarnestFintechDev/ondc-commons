@@ -81,7 +81,6 @@ var FetchRequest = function (url, method, body) { return __awaiter(void 0, void 
             case 1:
                 Header = _a.sent();
                 postgres_backend_1.log.debug("Looking for header after calling getHeader in utility/fetchRequest.ts -> ", "getHeader()", { Header: Header });
-                console.log(body);
                 option = {
                     method: method,
                     headers: Header,

@@ -38,7 +38,6 @@ export const FetchRequest = async (url: string, method:string, body: any) => {
     "getHeader()",
     {Header}
   );
-  console.log(body)
   const option:object = {
     method: method,
     headers: Header,
