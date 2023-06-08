@@ -30,7 +30,7 @@ export const getHeader = async (body: any) => {
 
   const header = {
     "accept": "application/json",
-    "authorization": `Signature keyId="${subscriber_id}|${UKID}|${algorithm}",algorithm="ed25519",created=${created},expires=${expires},headers="(created) (expires) digest",signature="${digest_base64}"`,
+    "authorization": `Signature keyId="${subscriber_id}|${UKID}|${algorithm}",algorithm="ed25519",created=${created},expires=${expires},headers="(created) (expires) digest",signature="${signature}"`,
     'content-type': 'application/json',
   };
   log.debug("Looking for header  before return in utility/header.ts -> ","getHeader()",{header});
