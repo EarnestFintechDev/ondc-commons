@@ -2,7 +2,7 @@ import { log } from '@smoke-trees/postgres-backend';
 import { createSigningString } from './verifySignature';
 import _sodium from 'libsodium-wrappers'
 
-export const getHeader = async (body: any) => {
+export const getHeader = async (body: string) => {
   await _sodium.ready
   const sodium = _sodium
   log.debug('Looking for body in utility/header.ts -> ', body);
