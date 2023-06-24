@@ -16,7 +16,10 @@ export const internalRequest = async (url: string, method: string, body?: any, o
             'ondc-bap-id': context.values?.bap_id,
             'ondc-transaction-id': context.values?.transaction_id,
             'ondc-message-id': context.values?.message_id,
-            'ondc-timestamp': context.values?.timestamp
+            'ondc-timestamp': context.values?.timestamp,
+            'ondc-ttl': context.values?.ttl,
+            'ondc-location-city': context.values?.location_city,
+            'ondc-location-country': context.values?.location_country
         }
     };
     return await fetch(url, option)
