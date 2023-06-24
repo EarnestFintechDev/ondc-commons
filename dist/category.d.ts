@@ -16,3 +16,11 @@ export declare class category {
     tags?: {};
     constructor(id: string, parent_category_id: string, descriptor: Descriptor, Time: Time, tags: {});
 }
+export declare const CategoryLookup: {
+    [key: string]: {
+        id: string;
+        descriptor: {
+            code: string;
+        };
+    };
+};

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Fulfillments = void 0;
+exports.FulfillmentsLookup = exports.Fulfillments = void 0;
 var postgres_backend_1 = require("@smoke-trees/postgres-backend");
 var agent_1 = require("./agent");
 var authorization_1 = require("./authorization");
@@ -126,4 +126,9 @@ var Fulfillments = /** @class */ (function () {
     return Fulfillments;
 }());
 exports.Fulfillments = Fulfillments;
+exports.FulfillmentsLookup = {
+    F1: { id: 'F1', type: 'ONLINE_EMAIL_SMS' },
+    F2: { id: 'F2', type: 'ONLINE_EMAIL_SMS' },
+    F3: { id: 'F3', type: 'ONLINE_EMAIL_SMS' },
+};
 //# sourceMappingURL=fullFillment.js.map

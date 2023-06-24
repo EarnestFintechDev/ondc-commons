@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.category = void 0;
+exports.CategoryLookup = exports.category = void 0;
 var postgres_backend_1 = require("@smoke-trees/postgres-backend");
 var descriptor_1 = require("./descriptor");
 var time_1 = require("./time");
@@ -49,4 +49,7 @@ var category = /** @class */ (function () {
     return category;
 }());
 exports.category = category;
+exports.CategoryLookup = {
+    C1: { id: 'C1', descriptor: { code: 'ONLINE' } }
+};
 //# sourceMappingURL=category.js.map

@@ -36,3 +36,7 @@ export class category {
     this.tags = tags;
   }
 }
+
+export const CategoryLookup: { [key: string]: { id: string, descriptor: { code: string } } } = {
+  C1: { id: 'C1', descriptor: { code: 'ONLINE' } }
+}

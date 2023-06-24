@@ -75,3 +75,9 @@ export declare class Fulfillments {
         person?: Person | null;
     });
 }
+export declare const FulfillmentsLookup: {
+    [key: string]: {
+        id: string;
+        type: string;
+    };
+};
