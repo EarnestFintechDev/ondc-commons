@@ -9,28 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Context = exports.Action = exports.City = void 0;
+exports.Context = exports.Action = void 0;
 var postgres_backend_1 = require("@smoke-trees/postgres-backend");
-var Domain;
-(function (Domain) {
-    Domain["nic2004:52110"] = "nic2004:52110";
-})(Domain || (Domain = {}));
-var City;
-(function (City) {
-    City["std:080"] = "std:080";
-    City["std:011"] = "std:011";
-    City["std:0422"] = "std:0422";
-    City["std:0364"] = "std:0364";
-    City["std:0522"] = "std:0522";
-    City["std:0755"] = "std:0755";
-    City["std:044"] = "std:044";
-    City[" std:0497"] = " std:0497";
-    City["std:0487"] = "std:0487";
-    City["std:022"] = "std:022";
-    City["std:020"] = "std:020";
-    City["std:040"] = "std:040";
-    City["std:0145"] = "std:0145";
-})(City = exports.City || (exports.City = {}));
 var Action;
 (function (Action) {
     Action["search"] = "search";
@@ -70,13 +50,13 @@ var Context = /** @class */ (function () {
         this.bap_uri = bap_uri;
     }
     __decorate([
-        postgres_backend_1.Documentation.addField({ type: "string", enum: ["nic2004: 52110"], default: Domain["nic2004:52110"] }),
+        postgres_backend_1.Documentation.addField({ type: "string", enum: ["nic2004: 52110"], default: 'ONDC:FIS10' }),
         __metadata("design:type", String)
     ], Context.prototype, "domain", void 0);
     __decorate([
         postgres_backend_1.Documentation.addField({
             type: "object", properties: {
-                city: { type: "object", properties: { code: { type: 'string', enum: Object.keys(City), default: City["std:011"] } } },
+                city: { type: "object", properties: { code: { type: 'string', example: "std:080" } } },
                 country: {
                     type: "object", properties: {
                         code: { type: 'string', default: "IND" },

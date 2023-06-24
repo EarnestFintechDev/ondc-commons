@@ -1,21 +1,3 @@
-declare enum Domain {
-    "nic2004:52110" = "nic2004:52110"
-}
-export declare enum City {
-    "std:080" = "std:080",
-    "std:011" = "std:011",
-    "std:0422" = "std:0422",
-    "std:0364" = "std:0364",
-    "std:0522" = "std:0522",
-    "std:0755" = "std:0755",
-    "std:044" = "std:044",
-    " std:0497" = " std:0497",
-    "std:0487" = "std:0487",
-    "std:022" = "std:022",
-    "std:020" = "std:020",
-    "std:040" = "std:040",
-    "std:0145" = "std:0145"
-}
 export declare enum Action {
     "search" = "search",
     "select" = "select",
@@ -56,10 +38,10 @@ export declare class Context {
      * @param {string} key -    // The encryption public key of the sender.
      * @param {string} ttl -    // Timestamp for which this message holds valid in ISO8601 durations format - Outer limit for ttl for search, select, init, confirm, status, track, cancel, update, rating, support is 'PT30S' which is 30 seconds, different buyer apps can change this to meet their UX requirements, but it shouldn't exceed this outer limit.
     */
-    domain: Domain;
+    domain: string;
     location: {
         city: {
-            code: City;
+            code: string;
         };
         country: {
             code: string;
@@ -77,11 +59,10 @@ export declare class Context {
     ttl: string;
     constructor(ttl: string, location: {
         city: {
-            code: City;
+            code: string;
         };
         country: {
             code: string;
         };
-    }, timestamp: string, message_id: string, transaction_id: string, bpp_uri: string, bpp_id: string, version: string, action: Action, domain: Domain, bap_id?: string, bap_uri?: string);
+    }, timestamp: string, message_id: string, transaction_id: string, bpp_uri: string, bpp_id: string, version: string, action: Action, domain: string, bap_id?: string, bap_uri?: string);
 }
-export {};

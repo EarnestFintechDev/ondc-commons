@@ -1,24 +1,8 @@
 import { Documentation } from "@smoke-trees/postgres-backend";
 
 
-enum Domain {
-  "nic2004:52110" = "nic2004:52110",
-}
-export enum City {
-  "std:080" = "std:080",
-  "std:011" = "std:011",
-  "std:0422" = "std:0422",
-  "std:0364" = "std:0364",
-  "std:0522" = "std:0522",
-  "std:0755" = "std:0755",
-  "std:044" = "std:044",
-  " std:0497" = " std:0497",
-  "std:0487" = "std:0487",
-  "std:022" = "std:022",
-  "std:020"= "std:020",
-  "std:040" = "std:040",
-  "std:0145" = "std:0145",
-}
+
+
 export enum Action {
   "search"="search",
   "select" = "select",
@@ -64,11 +48,11 @@ export class Context {
 
 
 
-  @Documentation.addField({ type: "string", enum: ["nic2004: 52110"],default:Domain["nic2004:52110"] })
-  domain: Domain;
+  @Documentation.addField({ type: "string", enum: ["nic2004: 52110"], default: 'ONDC:FIS10' })
+  domain: string;
   @Documentation.addField({
     type: "object", properties: {
-      city: { type: "object", properties: { code: { type: 'string', enum: Object.keys(City), default: City["std:011"] } }},
+      city: { type: "object", properties: { code: { type: 'string', example: "std:080" } } },
       country: {
         type: "object", properties: {
           code: { type: 'string', default: "IND" },
@@ -77,7 +61,7 @@ export class Context {
     }
   })
   location: {
-      city: { code: City },
+      city: { code: string },
       country: { code: string }
   };
   @Documentation.addField({ type: "string", enum: Object.keys(Action) })
@@ -103,7 +87,7 @@ export class Context {
   constructor(
     ttl: string,
     location: {
-      city: { code: City },
+      city: { code: string },
       country: { code: string }
     },
     timestamp: string,
@@ -113,7 +97,7 @@ export class Context {
     bpp_id: string,
     version: string,
     action: Action,
-    domain: Domain,
+    domain: string,
     bap_id?: string,
     bap_uri?: string,
     
