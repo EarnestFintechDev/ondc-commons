@@ -15,8 +15,8 @@ export class Contacts{
   @Documentation.addField({ type:"string"})
   email: string;
   @Documentation.addField({ type:"object"})
-  tags: object;
-  constructor(phone: string, email: string, tags: object)
+  tags?: object;
+  constructor(phone: string, email: string, tags?: object)
   {
     this.phone = phone;
     this.email = email;
