@@ -8,6 +8,6 @@ export declare class Contacts {
  */
     phone: string;
     email: string;
-    tags: object;
-    constructor(phone: string, email: string, tags: object);
+    tags?: object;
+    constructor(phone: string, email: string, tags?: object);
 }
