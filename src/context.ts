@@ -24,6 +24,8 @@ export enum Action {
   "on_cancel"="on_cancel",
   "on_rating"="on_rating",
   "on_support" ="on_support",
+  'issue' = 'issue',
+  'on_issue' = 'on_issue'
 }
 @Documentation.addSchema({ type: "object" })
 export class Context {
