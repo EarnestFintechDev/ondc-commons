@@ -18,7 +18,9 @@ export declare enum Action {
     "on_track" = "on_track",
     "on_cancel" = "on_cancel",
     "on_rating" = "on_rating",
-    "on_support" = "on_support"
+    "on_support" = "on_support",
+    'issue' = "issue",
+    'on_issue' = "on_issue"
 }
 export declare class Context {
     /**

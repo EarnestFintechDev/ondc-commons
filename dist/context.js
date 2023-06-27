@@ -33,6 +33,8 @@ var Action;
     Action["on_cancel"] = "on_cancel";
     Action["on_rating"] = "on_rating";
     Action["on_support"] = "on_support";
+    Action["issue"] = "issue";
+    Action["on_issue"] = "on_issue";
 })(Action = exports.Action || (exports.Action = {}));
 var Context = /** @class */ (function () {
     function Context(ttl, location, timestamp, message_id, transaction_id, bpp_uri, bpp_id, version, action, domain, bap_id, bap_uri) {
