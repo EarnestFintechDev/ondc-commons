@@ -35,6 +35,8 @@ var Action;
     Action["on_support"] = "on_support";
     Action["issue"] = "issue";
     Action["on_issue"] = "on_issue";
+    Action["issue_status"] = "issue_status";
+    Action["on_issue_status"] = "on_issue_status";
 })(Action = exports.Action || (exports.Action = {}));
 var Context = /** @class */ (function () {
     function Context(ttl, location, timestamp, message_id, transaction_id, bpp_uri, bpp_id, version, action, domain, bap_id, bap_uri) {
