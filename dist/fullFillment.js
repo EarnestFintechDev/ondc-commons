@@ -128,7 +128,7 @@ var Fulfillments = /** @class */ (function () {
 exports.Fulfillments = Fulfillments;
 exports.FulfillmentsLookup = {
     F1: { id: 'F1', type: 'ONLINE_EMAIL_SMS' },
-    F2: { id: 'F2', type: 'ONLINE_EMAIL_SMS' },
-    F3: { id: 'F3', type: 'ONLINE_EMAIL_SMS' },
+    F2: { id: 'F2', type: 'EMAIL' },
+    F3: { id: 'F3', type: 'SMS' },
 };
 //# sourceMappingURL=fullFillment.js.map

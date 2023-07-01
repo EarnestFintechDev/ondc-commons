@@ -164,6 +164,6 @@ export class Fulfillments {
 
 export const FulfillmentsLookup: { [key: string]: { id: string, type: string } } = {
   F1: { id: 'F1', type: 'ONLINE_EMAIL_SMS' },
-  F2: { id: 'F2', type: 'ONLINE_EMAIL_SMS' },
-  F3: { id: 'F3', type: 'ONLINE_EMAIL_SMS' },
+  F2: { id: 'F2', type: 'EMAIL' },
+  F3: { id: 'F3', type: 'SMS' },
 }
