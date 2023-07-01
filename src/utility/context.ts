@@ -14,7 +14,7 @@ export function getContext(): Context {
       city: { code: values.location_city },
       country: { code: values.location_country }
     },
-    values.timestamp,
+    new Date().toISOString(),
     values.message_id,
     values.transaction_id,
     values.bpp_uri ?? process.env['BPP_URI'] ?? 'https://ondc.vistar.solutions/v1/bpp',

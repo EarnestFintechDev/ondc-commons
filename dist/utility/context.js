@@ -12,7 +12,7 @@ function getContext() {
     var context = new context_1.Context(values.ttl, {
         city: { code: values.location_city },
         country: { code: values.location_country }
-    }, values.timestamp, values.message_id, values.transaction_id, (_b = (_a = values.bpp_uri) !== null && _a !== void 0 ? _a : process.env['BPP_URI']) !== null && _b !== void 0 ? _b : 'https://ondc.vistar.solutions/v1/bpp', (_d = (_c = values.bpp_id) !== null && _c !== void 0 ? _c : process.env['BPP_ID']) !== null && _d !== void 0 ? _d : 'ondc.vistar.solutions', values.version, values.action, values.domain, values.bap_id, values.bap_uri);
+    }, new Date().toISOString(), values.message_id, values.transaction_id, (_b = (_a = values.bpp_uri) !== null && _a !== void 0 ? _a : process.env['BPP_URI']) !== null && _b !== void 0 ? _b : 'https://ondc.vistar.solutions/v1/bpp', (_d = (_c = values.bpp_id) !== null && _c !== void 0 ? _c : process.env['BPP_ID']) !== null && _d !== void 0 ? _d : 'ondc.vistar.solutions', values.version, values.action, values.domain, values.bap_id, values.bap_uri);
     return context;
 }
 exports.getContext = getContext;
