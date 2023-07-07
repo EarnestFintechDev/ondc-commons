@@ -87,7 +87,7 @@ export class Context {
   @Documentation.addField({ type: "string" })
   timestamp: string;
   @Documentation.addField({ type: "string" })
-  ttl: string ;
+  ttl?: string;
   constructor(
     ttl: string,
     location: {

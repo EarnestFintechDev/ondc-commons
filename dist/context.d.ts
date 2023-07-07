@@ -60,7 +60,7 @@ export declare class Context {
     transaction_id: string;
     message_id: string;
     timestamp: string;
-    ttl: string;
+    ttl?: string;
     constructor(ttl: string, location: {
         city: {
             code: string;
