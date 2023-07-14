@@ -87,7 +87,7 @@ export class Context {
   @Documentation.addField({ type: "string" })
   timestamp: string;
   @Documentation.addField({ type: "string" })
-  ttl: string ;
+  ttl: string | undefined ;
   constructor(
     ttl: string,
     location: {
@@ -115,7 +115,7 @@ export class Context {
       (this.message_id = message_id),
       (this.timestamp = timestamp),
       (this.transaction_id = transaction_id);
-    this.ttl = ttl;
+    this.ttl = ttl || undefined;
     this.bap_id = bap_id
     this.bap_uri = bap_uri
   }
