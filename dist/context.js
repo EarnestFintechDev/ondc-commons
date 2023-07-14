@@ -49,7 +49,7 @@ var Context = /** @class */ (function () {
             (this.message_id = message_id),
             (this.timestamp = timestamp),
             (this.transaction_id = transaction_id);
-        this.ttl = ttl;
+        this.ttl = ttl || undefined;
         this.bap_id = bap_id;
         this.bap_uri = bap_uri;
     }
@@ -108,7 +108,7 @@ var Context = /** @class */ (function () {
     ], Context.prototype, "timestamp", void 0);
     __decorate([
         postgres_backend_1.Documentation.addField({ type: "string" }),
-        __metadata("design:type", String)
+        __metadata("design:type", Object)
     ], Context.prototype, "ttl", void 0);
     Context = __decorate([
         postgres_backend_1.Documentation.addSchema({ type: "object" }),
