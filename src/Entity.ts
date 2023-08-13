@@ -17,7 +17,7 @@ export class Entity {
   gst: EntityGst;
   pan: EntityPan;
   name_of_authorised_signatory: string;
-  designation_of_authorised_signatory: string;
+  address_of_authorised_signatory: string;
   email_id: string;
   mobile_no: string;
   country: string;
@@ -29,7 +29,7 @@ export class Entity {
     gst: EntityGst,
     pan: EntityPan,
     name_of_authorised_signatory: string,
-    designation_of_authorised_signatory: string,
+    address_of_authorised_signatory: string,
     email_id: string,
     mobile_no: string,
     country: string,

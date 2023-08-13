@@ -23,6 +23,7 @@ export const generateKeyPair = async (): Promise<{
     const encryptionPublicKey = sodium.to_base64(encryptionKeyPair.publicKey, _sodium.base64_variants.ORIGINAL);
     const encryptionPrivateKey = sodium.to_base64(encryptionKeyPair.privateKey, _sodium.base64_variants.ORIGINAL);
 
+
     const validFrom = new Date();
     // 2 years from now
     const validTo = new Date(validFrom.getTime() + 2 * 365 * 24 * 60 * 60 * 1000);
