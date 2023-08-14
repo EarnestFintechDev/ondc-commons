@@ -39,70 +39,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var postgres_backend_1 = require("@smoke-trees/postgres-backend");
 var crypto_1 = __importDefault(require("crypto"));
 function challengeDecrypt(cryptoPrivateKey, cryptoPublicKey, cipherstring) {
     return __awaiter(this, void 0, void 0, function () {
-        var privateKeyBuffer, publicKeyBuffer, publicPrefix, publicPostfix, privatePrefix, privatePostfix, pemPublicKey, pemPrivateKey, sharedKey, cipher, ciphertxt, decrypted;
+        var privateKeyBuffer, publicKeyBuffer, buffer, publicKey, privateKey, keyPair, deCipher, res;
         return __generator(this, function (_a) {
             privateKeyBuffer = Buffer.from(cryptoPrivateKey, 'base64');
             publicKeyBuffer = Buffer.from(cryptoPublicKey, 'base64');
-            postgres_backend_1.log.debug('Buffers', 'utils/challengeDecrypt', { privateKeyBuffer: privateKeyBuffer, publicKeyBuffer: publicKeyBuffer });
-            publicPrefix = '-----BEGIN PUBLIC KEY-----\n';
-            publicPostfix = '-----END PUBLIC KEY-----';
-            privatePrefix = '-----BEGIN PRIVATE KEY-----\n';
-            privatePostfix = '-----END PRIVATE KEY-----';
-            if (!publicKeyBuffer || !privateKeyBuffer) {
-                postgres_backend_1.log.error('No public or private key found', 'utils/challengeDecrypt', {
-                    cryptoPrivateKey: cryptoPrivateKey,
-                    cryptoPublicKey: cryptoPublicKey,
-                    cipherstring: cipherstring,
-                    publicKeyBuffer: publicKeyBuffer,
-                    privateKeyBuffer: privateKeyBuffer
-                });
-                throw new Error('No public or private key found');
-            }
-            pemPublicKey = publicPrefix +
-                publicKeyBuffer
-                    .toString('base64')
-                    .match(/.{0,64}/g)
-                    .join('\n') +
-                publicPostfix;
-            pemPrivateKey = privatePrefix +
-                privateKeyBuffer
-                    .toString('base64')
-                    .match(/.{0,64}/g)
-                    .join('\n') +
-                privatePostfix;
-            postgres_backend_1.log.debug('PEM Keys', 'utils/challengeDecrypt', { pemPublicKey: pemPublicKey, pemPrivateKey: pemPrivateKey });
-            sharedKey = crypto_1.default.diffieHellman({
-                privateKey: crypto_1.default.createPrivateKey({
-                    key: pemPrivateKey
-                }),
-                publicKey: crypto_1.default.createPublicKey({
-                    key: pemPublicKey
-                })
+            buffer = Buffer.from(cipherstring, 'base64');
+            publicKey = crypto_1.default.createPublicKey({
+                key: publicKeyBuffer,
+                type: 'spki', format: 'der'
             });
-            postgres_backend_1.log.debug('Shared Key', 'utils/challengeDecrypt', { sharedKey: sharedKey });
-            cipher = crypto_1.default.createDecipheriv('aes-256-ecb', sharedKey, '');
-            ciphertxt = Buffer.from(cipherstring, 'base64');
-            decrypted = cipher.update(ciphertxt);
-            decrypted = Buffer.concat([decrypted, cipher.final()]);
-            return [2 /*return*/, decrypted.toString('utf-8')];
+            privateKey = crypto_1.default.createPrivateKey({
+                key: privateKeyBuffer,
+                type: 'pkcs8', format: 'der'
+            });
+            keyPair = crypto_1.default.diffieHellman({
+                publicKey: publicKey,
+                privateKey: privateKey
+            });
+            deCipher = crypto_1.default.createDecipheriv('aes-256-ecb', keyPair, null);
+            res = deCipher.update(buffer);
+            console.log(res.toString('base64'));
+            return [2 /*return*/, ''];
         });
     });
 }
 exports.default = challengeDecrypt;
-// console.log(
-//   encrypt(
-//     'MC4CAQAwBQYDK2VuBCIEIOgl3rf3arbk1PvIe0C9TZp7ImR71NSQdvuSu+zzY6xo',
-//     'MCowBQYDK2VuAyEAi801MjVpgFOXHjliyT6Nb14HkS5dj1p41qbeyU6/SC8='
-//   )
-// );
-//* Testing
-// const plainText = decrypt(
-//   'MC4CAQAwBQYDK2VuBCIEIOgl3rf3arbk1PvIe0C9TZp7ImR71NSQdvuSu+zzY6xo',
-//   'MCowBQYDK2VuAyEAi801MjVpgFOXHjliyT6Nb14HkS5dj1p41qbeyU6/SC8=',
-//   'CrwN248HS4CIYsUvxtrK0pWCBaoyZh4LnWtGqeH7Mpc='
-// );
 //# sourceMappingURL=challengeDecryption.js.map

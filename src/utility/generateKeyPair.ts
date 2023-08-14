@@ -28,6 +28,12 @@ export const generateKeyPair = async (): Promise<{
     const encryptionPublicKey = encryptionKeyPair.publicKey.export({ type: 'spki', format: 'der' }).toString('base64')
     const encryptionPrivateKey = encryptionKeyPair.privateKey.export({ type: 'pkcs8', format: 'der' }).toString('base64')
 
+    // encryptionKeyPair = crypto.generateKeyPairSync('x25519')
+    // encryptionPublicKey = encryptionKeyPair.publicKey.export({ type: 'spki', format: 'der' }).toString('base64')
+    // encryptionPrivateKey = encryptionKeyPair.privateKey.export({ type: 'pkcs8', format: 'der' }).toString('base64')
+
+
+
     // signingKeyPair = sodium.crypto_sign_keypair();
     // signingPublicKey = sodium.to_base64(signingKeyPair.publicKey, _sodium.base64_variants.ORIGINAL);
     // signingPrivateKey = sodium.to_base64(signingKeyPair.privateKey, _sodium.base64_variants.ORIGINAL);
