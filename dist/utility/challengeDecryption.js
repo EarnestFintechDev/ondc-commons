@@ -61,8 +61,8 @@ function challengeDecrypt(cryptoPrivateKey, cryptoPublicKey, cipherstring) {
             });
             deCipher = crypto_1.default.createDecipheriv('aes-256-ecb', keyPair, null);
             res = deCipher.update(buffer);
-            console.log(res.toString('base64'));
-            return [2 /*return*/, res.toString('base64')];
+            console.log(res.toString('utf-8'));
+            return [2 /*return*/, res.toString('utf-8')];
         });
     });
 }

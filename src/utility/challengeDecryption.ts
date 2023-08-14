@@ -32,7 +32,7 @@ export default async function challengeDecrypt(
   )
 
   const res = deCipher.update(buffer)
-  console.log(res.toString('base64'))
+  console.log(res.toString('utf-8'))
 
-  return res.toString('base64')
+  return res.toString('utf-8')
 }
