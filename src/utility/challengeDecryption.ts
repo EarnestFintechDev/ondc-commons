@@ -34,6 +34,5 @@ export default async function challengeDecrypt(
   const res = deCipher.update(buffer)
   console.log(res.toString('base64'))
 
-
-  return ''
+  return res
 }
