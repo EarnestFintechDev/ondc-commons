@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateKeyPair = void 0;
 var postgres_backend_1 = require("@smoke-trees/postgres-backend");
 var libsodium_wrappers_1 = __importDefault(require("libsodium-wrappers"));
+var crypto_1 = __importDefault(require("crypto"));
 var generateKeyPair = function () { return __awaiter(void 0, void 0, void 0, function () {
     var sodium, signingKeyPair, signingPublicKey, signingPrivateKey, encryptionKeyPair, encryptionPublicKey, encryptionPrivateKey, validFrom, validTo, keyPair, err_1;
     return __generator(this, function (_a) {
@@ -55,9 +56,9 @@ var generateKeyPair = function () { return __awaiter(void 0, void 0, void 0, fun
                 signingKeyPair = sodium.crypto_sign_keypair();
                 signingPublicKey = sodium.to_base64(signingKeyPair.publicKey, libsodium_wrappers_1.default.base64_variants.ORIGINAL);
                 signingPrivateKey = sodium.to_base64(signingKeyPair.privateKey, libsodium_wrappers_1.default.base64_variants.ORIGINAL);
-                encryptionKeyPair = sodium.crypto_box_keypair();
-                encryptionPublicKey = sodium.to_base64(encryptionKeyPair.publicKey, libsodium_wrappers_1.default.base64_variants.ORIGINAL);
-                encryptionPrivateKey = sodium.to_base64(encryptionKeyPair.privateKey, libsodium_wrappers_1.default.base64_variants.ORIGINAL);
+                encryptionKeyPair = crypto_1.default.generateKeyPairSync('x25519');
+                encryptionPublicKey = encryptionKeyPair.publicKey.export({ type: 'spki', format: 'der' }).toString('base64');
+                encryptionPrivateKey = encryptionKeyPair.privateKey.export({ type: 'pkcs8', format: 'der' }).toString('base64');
                 validFrom = new Date();
                 validTo = new Date(validFrom.getTime() + 2 * 365 * 24 * 60 * 60 * 1000);
                 keyPair = {

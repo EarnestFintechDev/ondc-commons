@@ -40,7 +40,7 @@ export class Entity {
     this.gst = gst;
     this.pan = pan;
     this.name_of_authorised_signatory = name_of_authorised_signatory;
-    this.designation_of_authorised_signatory = designation_of_authorised_signatory;
+    this.address_of_authorised_signatory = address_of_authorised_signatory;
     this.email_id = email_id;
     this.mobile_no = mobile_no;
     this.country = country;
