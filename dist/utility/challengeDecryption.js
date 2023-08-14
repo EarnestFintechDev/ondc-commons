@@ -42,7 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var crypto_1 = __importDefault(require("crypto"));
 function challengeDecrypt(cryptoPrivateKey, cryptoPublicKey, cipherstring) {
     return __awaiter(this, void 0, void 0, function () {
-        var privateKeyBuffer, publicKeyBuffer, buffer, publicKey, privateKey, keyPair, deCipher, res;
+        var privateKeyBuffer, publicKeyBuffer, buffer, publicKey, privateKey, keyPair, deCipher, res1, res2;
         return __generator(this, function (_a) {
             privateKeyBuffer = Buffer.from(cryptoPrivateKey, 'base64');
             publicKeyBuffer = Buffer.from(cryptoPublicKey, 'base64');
@@ -60,9 +60,10 @@ function challengeDecrypt(cryptoPrivateKey, cryptoPublicKey, cipherstring) {
                 privateKey: privateKey
             });
             deCipher = crypto_1.default.createDecipheriv('aes-256-ecb', keyPair, null);
-            res = deCipher.update(buffer);
-            console.log(res.toString('utf-8'));
-            return [2 /*return*/, res.toString('utf-8')];
+            res1 = deCipher.update(buffer);
+            res2 = deCipher.final();
+            console.log(res1.toString('utf-8') + res2.toString());
+            return [2 /*return*/, res1.toString('utf-8') + res2.toString()];
         });
     });
 }

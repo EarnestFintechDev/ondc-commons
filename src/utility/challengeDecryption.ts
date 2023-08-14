@@ -31,8 +31,10 @@ export default async function challengeDecrypt(
     null
   )
 
-  const res = deCipher.update(buffer)
-  console.log(res.toString('utf-8'))
+  const res1 = deCipher.update(buffer)
 
-  return res.toString('utf-8')
+  const res2 = deCipher.final()
+  console.log(res1.toString('utf-8') + res2.toString())
+
+  return res1.toString('utf-8') + res2.toString()
 }
