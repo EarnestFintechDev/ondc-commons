@@ -2,6 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import _sodium from 'libsodium-wrappers';
 import { log } from '@smoke-trees/postgres-backend';
+import crypto from 'crypto'
 
 export const createSigningString = async (message: string, created: string, expires: string) => {
   if (!created) created = Math.floor(new Date().getTime() / 1000).toString();
@@ -131,3 +132,46 @@ export const verifySignature = async (header: any, body: any) => {
     return false;
   }
 };
+
+function aesGcmEncrypt(key: Buffer, plaintext: Buffer) {
+  
+    var nonce = getRandomIV();
+    var cipher = crypto.createCipheriv('aes-256-gcm', key, nonce);
+    var nonceCiphertextTag = Buffer.concat([
+        nonce, 
+        cipher.update(plaintext), 
+        cipher.final(), 
+        cipher.getAuthTag()
+    ]); 
+    return nonceCiphertextTag.toString('base64');
+}
+
+function getRandomIV() {
+    return crypto.randomBytes(12);
+}
+
+export const encryptData = async (data: string, header: any, privateKey: any,domain: string = "ONDC:FIS10") => {
+  try {
+    log.debug("Encrypting data", "encryptData", { data, header, domain })
+    const headerParts = split_auth_header(header)
+    log.debug("headerParts", "encryptData", { headerParts })
+
+    const keyIdSplit = headerParts["keyId"].split("|")
+    const subscriber_id = keyIdSplit[0]
+    const unique_key_id = keyIdSplit[1]
+    const publicKey = await lookupRegistry(subscriber_id, unique_key_id, domain)
+    if(!publicKey) {
+      log.warn("Error getting public key", "encryptData", {publicKey})
+      return {error: true} as const
+    }
+    log.debug("Public key", "encryptData", {publicKey})
+    const sharedKey = crypto.diffieHellman({privateKey,publicKey})
+    log.debug("Shared key", "encryptData", {sharedKey})
+    const encryptedString = aesGcmEncrypt(sharedKey, Buffer.from(data, "utf8"))
+    log.debug("Encrypted String", "encryptData", { encryptedString })
+    return {error: false, encryptedString} as const
+  } catch (e: any) {
+    log.error("Error in encrypting data", "encryptData", e, { message: e.message, data, header, domain })
+    return {error: true} as const
+  }
+}
