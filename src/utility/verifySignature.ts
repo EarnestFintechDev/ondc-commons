@@ -133,9 +133,9 @@ export const verifySignature = async (header: any, body: any) => {
   }
 };
 
-function aesGcmEncrypt(key: Buffer, plaintext: Buffer) {
+export function aes256GcmEncrypt(key: Buffer, plaintext: Buffer) {
   
-    var nonce = getRandomIV();
+    var nonce = crypto.randomBytes(12)
     var cipher = crypto.createCipheriv('aes-256-gcm', key, nonce);
     var nonceCiphertextTag = Buffer.concat([
         nonce, 
@@ -146,9 +146,15 @@ function aesGcmEncrypt(key: Buffer, plaintext: Buffer) {
     return nonceCiphertextTag.toString('base64');
 }
 
-function getRandomIV() {
-    return crypto.randomBytes(12);
+export function getSharedKey(publicKey: Buffer, privateKey: Buffer, keyLength = 256) {
+  const dh = crypto.createDiffieHellman(keyLength)
+
+  dh.setPrivateKey(privateKey)
+  dh.setPublicKey(publicKey)
+
+  return dh.generateKeys().toString("base64")
 }
+
 
 export const encryptData = async (data: string, header: any, privateKey: any,domain: string = "ONDC:FIS10") => {
   try {
@@ -165,13 +171,23 @@ export const encryptData = async (data: string, header: any, privateKey: any,dom
       return {error: true} as const
     }
     log.debug("Public key", "encryptData", {publicKey})
-    const sharedKey = crypto.diffieHellman({privateKey,publicKey})
+    const sharedKey = getSharedKey(Buffer.from(publicKey, "base64"), Buffer.from(privateKey, "base64"))
     log.debug("Shared key", "encryptData", {sharedKey})
-    const encryptedString = aesGcmEncrypt(sharedKey, Buffer.from(data, "utf8"))
+    const encryptedString = aes256GcmEncrypt(Buffer.from(sharedKey, "base64"), Buffer.from(data, "utf8"))
     log.debug("Encrypted String", "encryptData", { encryptedString })
     return {error: false, encryptedString} as const
   } catch (e: any) {
     log.error("Error in encrypting data", "encryptData", e, { message: e.message, data, header, domain })
     return {error: true} as const
   }
+}
+
+export function aes256GcmDecrypt(encryptedString: string, key: Buffer) {
+  const encBuf = Buffer.from(encryptedString, "base64")
+  const iv = encBuf.subarray(0, 12)
+  const data = crypto.createDecipheriv("aes-256-gcm", key, iv)
+  const authTag = encBuf.subarray(encBuf.length - 16)
+  data.setAuthTag(authTag)
+  let decrypted = Buffer.concat([data.update(encBuf.subarray(12, encBuf.length - 16)), data.final()])
+  return decrypted.toString("utf8")
 }
