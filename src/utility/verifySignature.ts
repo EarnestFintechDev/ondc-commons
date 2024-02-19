@@ -2,6 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import _sodium from 'libsodium-wrappers';
 import { log } from '@smoke-trees/postgres-backend';
+import crypto from 'crypto'
 
 export const createSigningString = async (message: string, created: string, expires: string) => {
   if (!created) created = Math.floor(new Date().getTime() / 1000).toString();
@@ -131,3 +132,62 @@ export const verifySignature = async (header: any, body: any) => {
     return false;
   }
 };
+
+export function aes256GcmEncrypt(key: Buffer, plaintext: Buffer) {
+  
+    var nonce = crypto.randomBytes(12)
+    var cipher = crypto.createCipheriv('aes-256-gcm', key, nonce);
+    var nonceCiphertextTag = Buffer.concat([
+        nonce, 
+        cipher.update(plaintext), 
+        cipher.final(), 
+        cipher.getAuthTag()
+    ]); 
+    return nonceCiphertextTag.toString('base64');
+}
+
+export function getSharedKey(publicKey: Buffer, privateKey: Buffer, keyLength = 256) {
+  const dh = crypto.createDiffieHellman(keyLength)
+
+  dh.setPrivateKey(privateKey)
+  dh.setPublicKey(publicKey)
+
+  return dh.generateKeys().toString("base64")
+}
+
+
+export const encryptData = async (data: string, header: any, privateKey: any,domain: string = "ONDC:FIS10") => {
+  try {
+    log.debug("Encrypting data", "encryptData", { data, header, domain })
+    const headerParts = split_auth_header(header)
+    log.debug("headerParts", "encryptData", { headerParts })
+
+    const keyIdSplit = headerParts["keyId"].split("|")
+    const subscriber_id = keyIdSplit[0]
+    const unique_key_id = keyIdSplit[1]
+    const publicKey = await lookupRegistry(subscriber_id, unique_key_id, domain)
+    if(!publicKey) {
+      log.warn("Error getting public key", "encryptData", {publicKey})
+      return {error: true} as const
+    }
+    log.debug("Public key", "encryptData", {publicKey})
+    const sharedKey = getSharedKey(Buffer.from(publicKey, "base64"), Buffer.from(privateKey, "base64"))
+    log.debug("Shared key", "encryptData", {sharedKey})
+    const encryptedString = aes256GcmEncrypt(Buffer.from(sharedKey, "base64"), Buffer.from(data, "utf8"))
+    log.debug("Encrypted String", "encryptData", { encryptedString })
+    return {error: false, encryptedString} as const
+  } catch (e: any) {
+    log.error("Error in encrypting data", "encryptData", e, { message: e.message, data, header, domain })
+    return {error: true} as const
+  }
+}
+
+export function aes256GcmDecrypt(encryptedString: string, key: Buffer) {
+  const encBuf = Buffer.from(encryptedString, "base64")
+  const iv = encBuf.subarray(0, 12)
+  const data = crypto.createDecipheriv("aes-256-gcm", key, iv)
+  const authTag = encBuf.subarray(encBuf.length - 16)
+  data.setAuthTag(authTag)
+  let decrypted = Buffer.concat([data.update(encBuf.subarray(12, encBuf.length - 16)), data.final()])
+  return decrypted.toString("utf8")
+}
