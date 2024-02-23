@@ -39,11 +39,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifySignature = exports.createSigningString = void 0;
+exports.aes256GcmDecrypt = exports.encryptData = exports.getSharedKey = exports.aes256GcmEncrypt = exports.verifySignature = exports.createSigningString = void 0;
 var axios_1 = __importDefault(require("axios"));
 var lodash_1 = __importDefault(require("lodash"));
 var libsodium_wrappers_1 = __importDefault(require("libsodium-wrappers"));
 var postgres_backend_1 = require("@smoke-trees/postgres-backend");
+var crypto_1 = __importDefault(require("crypto"));
 var createSigningString = function (message, created, expires) { return __awaiter(void 0, void 0, void 0, function () {
     var sodium, digest, digest_base64, signing_string;
     return __generator(this, function (_a) {
@@ -195,4 +196,71 @@ var verifySignature = function (header, body) { return __awaiter(void 0, void 0,
     });
 }); };
 exports.verifySignature = verifySignature;
+function aes256GcmEncrypt(key, plaintext) {
+    var nonce = crypto_1.default.randomBytes(12);
+    var cipher = crypto_1.default.createCipheriv('aes-256-gcm', key, nonce);
+    var nonceCiphertextTag = Buffer.concat([
+        nonce,
+        cipher.update(plaintext),
+        cipher.final(),
+        cipher.getAuthTag()
+    ]);
+    return nonceCiphertextTag.toString('base64');
+}
+exports.aes256GcmEncrypt = aes256GcmEncrypt;
+function getSharedKey(publicKey, privateKey, keyLength) {
+    if (keyLength === void 0) { keyLength = 256; }
+    var dh = crypto_1.default.createDiffieHellman(keyLength);
+    dh.setPrivateKey(privateKey);
+    dh.setPublicKey(publicKey);
+    return dh.generateKeys().toString("base64");
+}
+exports.getSharedKey = getSharedKey;
+var encryptData = function (data, header, privateKey, domain) {
+    if (domain === void 0) { domain = "ONDC:FIS10"; }
+    return __awaiter(void 0, void 0, void 0, function () {
+        var headerParts, keyIdSplit, subscriber_id, unique_key_id, publicKey, sharedKey, encryptedString, e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    postgres_backend_1.log.debug("Encrypting data", "encryptData", { data: data, header: header, domain: domain });
+                    headerParts = split_auth_header(header);
+                    postgres_backend_1.log.debug("headerParts", "encryptData", { headerParts: headerParts });
+                    keyIdSplit = headerParts["keyId"].split("|");
+                    subscriber_id = keyIdSplit[0];
+                    unique_key_id = keyIdSplit[1];
+                    return [4 /*yield*/, lookupRegistry(subscriber_id, unique_key_id, domain)];
+                case 1:
+                    publicKey = _a.sent();
+                    if (!publicKey) {
+                        postgres_backend_1.log.warn("Error getting public key", "encryptData", { publicKey: publicKey });
+                        return [2 /*return*/, { error: true }];
+                    }
+                    postgres_backend_1.log.debug("Public key", "encryptData", { publicKey: publicKey });
+                    sharedKey = getSharedKey(Buffer.from(publicKey, "base64"), Buffer.from(privateKey, "base64"));
+                    postgres_backend_1.log.debug("Shared key", "encryptData", { sharedKey: sharedKey });
+                    encryptedString = aes256GcmEncrypt(Buffer.from(sharedKey, "base64"), Buffer.from(data, "utf8"));
+                    postgres_backend_1.log.debug("Encrypted String", "encryptData", { encryptedString: encryptedString });
+                    return [2 /*return*/, { error: false, encryptedString: encryptedString }];
+                case 2:
+                    e_1 = _a.sent();
+                    postgres_backend_1.log.error("Error in encrypting data", "encryptData", e_1, { message: e_1.message, data: data, header: header, domain: domain });
+                    return [2 /*return*/, { error: true }];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+};
+exports.encryptData = encryptData;
+function aes256GcmDecrypt(encryptedString, key) {
+    var encBuf = Buffer.from(encryptedString, "base64");
+    var iv = encBuf.subarray(0, 12);
+    var data = crypto_1.default.createDecipheriv("aes-256-gcm", key, iv);
+    var authTag = encBuf.subarray(encBuf.length - 16);
+    data.setAuthTag(authTag);
+    var decrypted = Buffer.concat([data.update(encBuf.subarray(12, encBuf.length - 16)), data.final()]);
+    return decrypted.toString("utf8");
+}
+exports.aes256GcmDecrypt = aes256GcmDecrypt;
 //# sourceMappingURL=verifySignature.js.map
