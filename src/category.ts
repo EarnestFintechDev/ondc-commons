@@ -40,3 +40,7 @@ export class category {
 export const CategoryLookup: { [key: string]: { id: string, descriptor: { code: string } } } = {
   C1: { id: 'C1', descriptor: { code: 'ONLINE' } }
 }
+
+export const CategoryLookupV2: { [key: string]: { id: string, descriptor: { code: string } } } = {
+  C1: { id: 'C1', descriptor: { code: 'CARD' } }
+}
