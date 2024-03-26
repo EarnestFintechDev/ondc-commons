@@ -24,3 +24,11 @@ export declare const CategoryLookup: {
         };
     };
 };
+export declare const CategoryLookupV2: {
+    [key: string]: {
+        id: string;
+        descriptor: {
+            code: string;
+        };
+    };
+};
