@@ -53,6 +53,9 @@ exports.CategoryLookup = {
     C1: { id: 'C1', descriptor: { code: 'ONLINE' } }
 };
 exports.CategoryLookupV2 = {
-    C1: { id: 'C1', descriptor: { code: 'CARD' } }
+    C1: { id: 'C1', descriptor: { code: 'CARD' } },
+    C2: { id: 'C2', descriptor: { code: 'PROMO' } },
+    C3: { id: 'C3', descriptor: { code: 'E_PAY' } },
+    C4: { id: 'C4', descriptor: { code: 'E_RUPI' } }
 };
 //# sourceMappingURL=category.js.map
