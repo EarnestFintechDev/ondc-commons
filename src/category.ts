@@ -4,43 +4,46 @@ import { Descriptors as Descriptor } from "./descriptor";
 import { Time } from "./time";
 @Documentation.addSchema({ type: "object" })
 export class category {
-  /**
-   * Describe a category.
-   * @param {string} id - Unique id of the category.
-   * @param {string} parent_category_id - Category/properties/idstring.Unique id of the category
-   * @param {string} descriptor - Describes the description of a real-world object.
-   * @param {string} time - Describes time in its various forms. It can be a single point in time; duration; or a structured timetable of operations.
-   * @param {string} tags - 	Describes a tag. This is a simple key-value store which is used to contain extended metadata.
-   */
-  @Documentation.addField({ type: "string" })
-  id: string | null;
-  @Documentation.addField({ type: "string" })
-  parent_category_id?: string;
-  @Documentation.addField({ $ref: Documentation.getRef(Descriptor) })
-  descriptor: Descriptor | null;
-  @Documentation.addField({ $ref: Documentation.getRef(Time) })
-  time?: Time | null;
-  @Documentation.addField({ type: "object" })
-  tags?: {};
-  constructor(
-    id: string,
-    parent_category_id: string,
-    descriptor: Descriptor,
-    Time: Time,
-    tags: {}
-  ) {
-    this.id = id;
-    this.parent_category_id = parent_category_id;
-    this.descriptor = descriptor;
-    this.time = Time;
-    this.tags = tags;
-  }
+	/**
+	 * Describe a category.
+	 * @param {string} id - Unique id of the category.
+	 * @param {string} parent_category_id - Category/properties/idstring.Unique id of the category
+	 * @param {string} descriptor - Describes the description of a real-world object.
+	 * @param {string} time - Describes time in its various forms. It can be a single point in time; duration; or a structured timetable of operations.
+	 * @param {string} tags - 	Describes a tag. This is a simple key-value store which is used to contain extended metadata.
+	 */
+	@Documentation.addField({ type: "string" })
+	id: string | null;
+	@Documentation.addField({ type: "string" })
+	parent_category_id?: string;
+	@Documentation.addField({ $ref: Documentation.getRef(Descriptor) })
+	descriptor: Descriptor | null;
+	@Documentation.addField({ $ref: Documentation.getRef(Time) })
+	time?: Time | null;
+	@Documentation.addField({ type: "object" })
+	tags?: {};
+	constructor(
+		id: string,
+		parent_category_id: string,
+		descriptor: Descriptor,
+		Time: Time,
+		tags: {}
+	) {
+		this.id = id;
+		this.parent_category_id = parent_category_id;
+		this.descriptor = descriptor;
+		this.time = Time;
+		this.tags = tags;
+	}
 }
 
 export const CategoryLookup: { [key: string]: { id: string, descriptor: { code: string } } } = {
-  C1: { id: 'C1', descriptor: { code: 'ONLINE' } }
+	C1: { id: 'C1', descriptor: { code: 'ONLINE' } }
 }
 
 export const CategoryLookupV2: { [key: string]: { id: string, descriptor: { code: string } } } = {
-  C1: { id: 'C1', descriptor: { code: 'CARD' } }
+	C1: { id: 'C1', descriptor: { code: 'CARD' } },
+	C2: { id: 'C2', descriptor: { code: 'PROMO' } },
+	C3: { id: 'C3', descriptor: { code: 'E_PAY' } },
+	C4: { id: 'C4', descriptor: { code: 'E_RUPI' } }
 }
