@@ -62,6 +62,9 @@ var FetchRequest = function (url, method, body) { return __awaiter(void 0, void 
                 return [4 /*yield*/, (0, node_fetch_1.default)(url, option)
                         .then(function (response) {
                         postgres_backend_1.log.debug("Looking for response coming from ".concat(url, " after calling FetchRequest function, this function available in utility/fetchRequest.ts -> "), "node-fetch", { response: response });
+                        response.text().then(function (data) {
+                            return postgres_backend_1.log.debug("Text output for response", "node-fetch", { data: data });
+                        });
                         return response.json();
                     })
                         .catch(function (err) {

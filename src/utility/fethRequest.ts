@@ -22,6 +22,9 @@ export const FetchRequest = async (url: string, method:string, body: any) => {
        "node-fetch",
         {response}
       );
+      response.text().then(data =>
+      log.debug("Text output for response", "node-fetch", {data})
+      )
       return response.json();
     })
     .catch((err) => {
