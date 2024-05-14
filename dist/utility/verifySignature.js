@@ -118,6 +118,23 @@ var getProviderPublicKey = function (providers, keyId) { return __awaiter(void 0
         return [2 /*return*/];
     });
 }); };
+var getProviderEncryptionPublicKey = function (providers, keyId) { return __awaiter(void 0, void 0, void 0, function () {
+    var provider;
+    return __generator(this, function (_a) {
+        try {
+            return [2 /*return*/, providers[0].encr_public_key
+                // console.log(providers)
+            ];
+            provider = lodash_1.default.find(providers, function (obj) { return obj.ukId == keyId && obj; });
+            // console.log(provider)
+            return [2 /*return*/, (provider === null || provider === void 0 ? void 0 : provider.encr_public_key) || false];
+        }
+        catch (err) {
+            return [2 /*return*/, false];
+        }
+        return [2 /*return*/];
+    });
+}); };
 var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __awaiter(void 0, void 0, void 0, function () {
     var body, response, public_key, err_2;
     return __generator(this, function (_a) {
@@ -147,6 +164,35 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
         }
     });
 }); };
+var getEncryptionPublicKey = function (subscriber_id, unique_key_id, domain) { return __awaiter(void 0, void 0, void 0, function () {
+    var body, response, public_key, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 3, , 4]);
+                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
+                return [4 /*yield*/, axios_1.default.post(process.env.GATEWAY_LOOKUP_URL || "", body)];
+            case 1:
+                response = _a.sent();
+                if (!response)
+                    return [2 /*return*/, false];
+                console.log(response.data);
+                return [4 /*yield*/, getProviderEncryptionPublicKey(response.data, unique_key_id)];
+            case 2:
+                public_key = _a.sent();
+                if (!public_key) {
+                    postgres_backend_1.log.debug("No public key found", "lookup registry", { domain: domain, subscriber_id: subscriber_id, unique_key_id: unique_key_id });
+                    return [2 /*return*/, false];
+                }
+                return [2 /*return*/, public_key];
+            case 3:
+                err_3 = _a.sent();
+                postgres_backend_1.log.error("Error in lookup", "lookupRegistry", err_3, { subscriber_id: subscriber_id, unique_key_id: unique_key_id, domain: domain });
+                return [2 /*return*/, false];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
 var remove_quotes = function (a) {
     return a.replace(/^["'](.+(?=["']$))["']$/, '$1');
 };
@@ -163,7 +209,7 @@ var split_auth_header = function (auth_header) {
     return parts;
 };
 var verifySignature = function (header, body) { return __awaiter(void 0, void 0, void 0, function () {
-    var isValid, domain, headerParts, keyIdSplit, subscriber_id, unique_key_id, algorithm, public_key, err_3;
+    var isValid, domain, headerParts, keyIdSplit, subscriber_id, unique_key_id, algorithm, public_key, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -188,8 +234,8 @@ var verifySignature = function (header, body) { return __awaiter(void 0, void 0,
                 _a.label = 3;
             case 3: return [2 /*return*/, isValid];
             case 4:
-                err_3 = _a.sent();
-                postgres_backend_1.log.error('Error in verify signature', 'verifySignature', err_3, { header: header, body: body });
+                err_4 = _a.sent();
+                postgres_backend_1.log.error('Error in verify signature', 'verifySignature', err_4, { header: header, body: body });
                 return [2 /*return*/, false];
             case 5: return [2 /*return*/];
         }
@@ -208,12 +254,23 @@ function aes256GcmEncrypt(key, plaintext) {
     return nonceCiphertextTag.toString('base64');
 }
 exports.aes256GcmEncrypt = aes256GcmEncrypt;
-function getSharedKey(publicKey, privateKey, keyLength) {
-    if (keyLength === void 0) { keyLength = 256; }
-    var dh = crypto_1.default.createDiffieHellman(keyLength);
-    dh.setPrivateKey(privateKey);
-    dh.setPublicKey(publicKey);
-    return dh.generateKeys().toString("base64");
+function getSharedKey(publicKey, privateKey) {
+    var privateObj = crypto_1.default.createPrivateKey({
+        key: privateKey,
+        format: "der",
+        type: "pkcs8",
+    });
+    var publicObj = crypto_1.default.createPublicKey({
+        key: publicKey,
+        format: "der",
+        type: "spki",
+    });
+    var sharedSecret = crypto_1.default.diffieHellman({
+        privateKey: privateObj,
+        publicKey: publicObj,
+    });
+    var sharedKey = sharedSecret.toString("base64");
+    return sharedKey;
 }
 exports.getSharedKey = getSharedKey;
 var encryptData = function (data, header, privateKey, domain) {
@@ -230,7 +287,7 @@ var encryptData = function (data, header, privateKey, domain) {
                     keyIdSplit = headerParts["keyId"].split("|");
                     subscriber_id = keyIdSplit[0];
                     unique_key_id = keyIdSplit[1];
-                    return [4 /*yield*/, lookupRegistry(subscriber_id, unique_key_id, domain)];
+                    return [4 /*yield*/, getEncryptionPublicKey(subscriber_id, unique_key_id, domain)];
                 case 1:
                     publicKey = _a.sent();
                     if (!publicKey) {
