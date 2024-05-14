@@ -63,6 +63,18 @@ const getProviderPublicKey = async (providers: any, keyId: string) => {
   }
 };
 
+const getProviderEncryptionPublicKey = async (providers: any, keyId: string) => {
+  try {
+    return providers[0].encr_public_key
+    // console.log(providers)
+    const provider = _.find(providers, (obj: any) => obj.ukId == keyId && obj)
+    // console.log(provider)
+    return provider?.encr_public_key || false
+  } catch (err) {
+    return false
+  }
+}
+
 const lookupRegistry = async (subscriber_id: string, unique_key_id: string, domain: string) => {
   try {
     const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
@@ -84,6 +96,28 @@ const lookupRegistry = async (subscriber_id: string, unique_key_id: string, doma
     return false;
   }
 };
+
+const getEncryptionPublicKey = async (subscriber_id: string, unique_key_id: string, domain: string) => {
+  try {
+    const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" }
+
+    const response = await axios.post(process.env.GATEWAY_LOOKUP_URL || "", body)
+
+    if (!response) return false
+
+    console.log(response.data)
+    const public_key = await getProviderEncryptionPublicKey(response.data, unique_key_id)
+    if (!public_key) {
+      log.debug("No public key found", "lookup registry", { domain, subscriber_id, unique_key_id })
+      return false
+    }
+
+    return public_key
+  } catch (err) {
+    log.error("Error in lookup", "lookupRegistry", err, { subscriber_id, unique_key_id, domain })
+    return false
+  }
+}
 
 const remove_quotes = (a: string) => {
   return a.replace(/^["'](.+(?=["']$))["']$/, '$1');
@@ -146,13 +180,26 @@ export function aes256GcmEncrypt(key: Buffer, plaintext: Buffer) {
     return nonceCiphertextTag.toString('base64');
 }
 
-export function getSharedKey(publicKey: Buffer, privateKey: Buffer, keyLength = 256) {
-  const dh = crypto.createDiffieHellman(keyLength)
+export function getSharedKey(publicKey: Buffer, privateKey: Buffer) {
+  const privateObj = crypto.createPrivateKey({
+    key: privateKey,
+    format: "der",
+    type: "pkcs8",
+  })
+  const publicObj = crypto.createPublicKey({
+    key: publicKey,
+    format: "der",
+    type: "spki",
+  })
 
-  dh.setPrivateKey(privateKey)
-  dh.setPublicKey(publicKey)
+  const sharedSecret = crypto.diffieHellman({
+    privateKey: privateObj,
+    publicKey: publicObj,
+  })
 
-  return dh.generateKeys().toString("base64")
+  const sharedKey = sharedSecret.toString("base64")
+
+  return sharedKey
 }
 
 
@@ -165,7 +212,7 @@ export const encryptData = async (data: string, header: any, privateKey: any,dom
     const keyIdSplit = headerParts["keyId"].split("|")
     const subscriber_id = keyIdSplit[0]
     const unique_key_id = keyIdSplit[1]
-    const publicKey = await lookupRegistry(subscriber_id, unique_key_id, domain)
+    const publicKey = await getEncryptionPublicKey(subscriber_id, unique_key_id, domain)
     if(!publicKey) {
       log.warn("Error getting public key", "encryptData", {publicKey})
       return {error: true} as const
