@@ -167,17 +167,33 @@ export const verifySignature = async (header: any, body: any) => {
   }
 };
 
+function convertPayloadToBase64(encryptedMessage: string, hmac: string, iv: string) {
+  const returnPayloadJSON = {
+    encrypted_data: encryptedMessage,
+    hmac: hmac,
+    nonce: iv,
+  }
+
+  const returnPayloadString = JSON.stringify(returnPayloadJSON)
+
+  const returnPayloadBase64 = Buffer.from(returnPayloadString, "utf8").toString("base64")
+
+  return returnPayloadBase64
+}
+
 export function aes256GcmEncrypt(key: Buffer, plaintext: Buffer) {
-  
-    var nonce = crypto.randomBytes(12)
-    var cipher = crypto.createCipheriv('aes-256-gcm', key, nonce);
-    var nonceCiphertextTag = Buffer.concat([
-        nonce, 
-        cipher.update(plaintext), 
-        cipher.final(), 
-        cipher.getAuthTag()
-    ]); 
-    return nonceCiphertextTag.toString('base64');
+  var nonce = crypto.randomBytes(12)
+  var cipher = crypto.createCipheriv("aes-256-gcm", key, nonce, {
+    authTagLength: 128 / 8,
+  })
+  var cypherText = cipher.update(plaintext) + cipher.final("base64")
+  const authTag = cipher.getAuthTag()
+
+  const authTagBase64 = authTag.toString("base64")
+
+  const digetBase64 = convertPayloadToBase64(cypherText, authTagBase64, nonce.toString("base64"))
+
+  return digetBase64
 }
 
 export function getSharedKey(publicKey: Buffer, privateKey: Buffer) {
@@ -230,11 +246,22 @@ export const encryptData = async (data: string, header: any, privateKey: any,dom
 }
 
 export function aes256GcmDecrypt(encryptedString: string, key: Buffer) {
-  const encBuf = Buffer.from(encryptedString, "base64")
-  const iv = encBuf.subarray(0, 12)
-  const data = crypto.createDecipheriv("aes-256-gcm", key, iv)
-  const authTag = encBuf.subarray(encBuf.length - 16)
-  data.setAuthTag(authTag)
-  let decrypted = Buffer.concat([data.update(encBuf.subarray(12, encBuf.length - 16)), data.final()])
-  return decrypted.toString("utf8")
+  const eData = encryptedString
+  const sharedKey = key
+  const decodedData = Buffer.from(eData, "base64").toString("utf8")
+  const dataJSON = JSON.parse(decodedData)
+  const { encrypted_data, hmac, nonce } = dataJSON
+
+  const authTag = Buffer.from(hmac, "base64")
+  const sharedKeyBytes = sharedKey
+  const nonceBytes = Buffer.from(nonce, "base64")
+
+  const decipher = crypto.createDecipheriv("aes-256-gcm", sharedKeyBytes, nonceBytes, {
+    authTagLength: 128 / 8,
+  })
+  decipher.setAuthTag(authTag)
+
+  const decryptedMessage = decipher.update(encrypted_data, "base64", "utf8") + decipher.final("utf8")
+
+  return decryptedMessage
 }

@@ -242,16 +242,26 @@ var verifySignature = function (header, body) { return __awaiter(void 0, void 0,
     });
 }); };
 exports.verifySignature = verifySignature;
+function convertPayloadToBase64(encryptedMessage, hmac, iv) {
+    var returnPayloadJSON = {
+        encrypted_data: encryptedMessage,
+        hmac: hmac,
+        nonce: iv,
+    };
+    var returnPayloadString = JSON.stringify(returnPayloadJSON);
+    var returnPayloadBase64 = Buffer.from(returnPayloadString, "utf8").toString("base64");
+    return returnPayloadBase64;
+}
 function aes256GcmEncrypt(key, plaintext) {
     var nonce = crypto_1.default.randomBytes(12);
-    var cipher = crypto_1.default.createCipheriv('aes-256-gcm', key, nonce);
-    var nonceCiphertextTag = Buffer.concat([
-        nonce,
-        cipher.update(plaintext),
-        cipher.final(),
-        cipher.getAuthTag()
-    ]);
-    return nonceCiphertextTag.toString('base64');
+    var cipher = crypto_1.default.createCipheriv("aes-256-gcm", key, nonce, {
+        authTagLength: 128 / 8,
+    });
+    var cypherText = cipher.update(plaintext) + cipher.final("base64");
+    var authTag = cipher.getAuthTag();
+    var authTagBase64 = authTag.toString("base64");
+    var digetBase64 = convertPayloadToBase64(cypherText, authTagBase64, nonce.toString("base64"));
+    return digetBase64;
 }
 exports.aes256GcmEncrypt = aes256GcmEncrypt;
 function getSharedKey(publicKey, privateKey) {
@@ -311,13 +321,20 @@ var encryptData = function (data, header, privateKey, domain) {
 };
 exports.encryptData = encryptData;
 function aes256GcmDecrypt(encryptedString, key) {
-    var encBuf = Buffer.from(encryptedString, "base64");
-    var iv = encBuf.subarray(0, 12);
-    var data = crypto_1.default.createDecipheriv("aes-256-gcm", key, iv);
-    var authTag = encBuf.subarray(encBuf.length - 16);
-    data.setAuthTag(authTag);
-    var decrypted = Buffer.concat([data.update(encBuf.subarray(12, encBuf.length - 16)), data.final()]);
-    return decrypted.toString("utf8");
+    var eData = encryptedString;
+    var sharedKey = key;
+    var decodedData = Buffer.from(eData, "base64").toString("utf8");
+    var dataJSON = JSON.parse(decodedData);
+    var encrypted_data = dataJSON.encrypted_data, hmac = dataJSON.hmac, nonce = dataJSON.nonce;
+    var authTag = Buffer.from(hmac, "base64");
+    var sharedKeyBytes = sharedKey;
+    var nonceBytes = Buffer.from(nonce, "base64");
+    var decipher = crypto_1.default.createDecipheriv("aes-256-gcm", sharedKeyBytes, nonceBytes, {
+        authTagLength: 128 / 8,
+    });
+    decipher.setAuthTag(authTag);
+    var decryptedMessage = decipher.update(encrypted_data, "base64", "utf8") + decipher.final("utf8");
+    return decryptedMessage;
 }
 exports.aes256GcmDecrypt = aes256GcmDecrypt;
 //# sourceMappingURL=verifySignature.js.map
