@@ -6,7 +6,7 @@ export declare const createSigningString: (message: string, created: string, exp
     digest_base64: string;
 }>;
 export declare const verifySignature: (header: any, body: any) => Promise<boolean>;
-export declare function aes256GcmEncrypt(key: Buffer, plaintext: Buffer): string;
+export declare function aes256GcmEncrypt(key: Buffer, plaintext: string): string;
 export declare function getSharedKey(publicKey: Buffer, privateKey: Buffer): string;
 export declare const encryptData: (data: string, header: any, privateKey: any, domain?: string) => Promise<{
     readonly error: true;

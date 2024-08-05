@@ -257,7 +257,7 @@ function aes256GcmEncrypt(key, plaintext) {
     var cipher = crypto_1.default.createCipheriv("aes-256-gcm", key, nonce, {
         authTagLength: 128 / 8,
     });
-    var cypherText = cipher.update(plaintext) + cipher.final("base64");
+    var cypherText = cipher.update(plaintext, "utf8", "base64") + cipher.final("base64");
     var authTag = cipher.getAuthTag();
     var authTagBase64 = authTag.toString("base64");
     var digetBase64 = convertPayloadToBase64(cypherText, authTagBase64, nonce.toString("base64"));
@@ -307,7 +307,7 @@ var encryptData = function (data, header, privateKey, domain) {
                     postgres_backend_1.log.debug("Public key", "encryptData", { publicKey: publicKey });
                     sharedKey = getSharedKey(Buffer.from(publicKey, "base64"), Buffer.from(privateKey, "base64"));
                     postgres_backend_1.log.debug("Shared key", "encryptData", { sharedKey: sharedKey });
-                    encryptedString = aes256GcmEncrypt(Buffer.from(sharedKey, "base64"), Buffer.from(data, "utf8"));
+                    encryptedString = aes256GcmEncrypt(Buffer.from(sharedKey, "base64"), data);
                     postgres_backend_1.log.debug("Encrypted String", "encryptData", { encryptedString: encryptedString });
                     return [2 /*return*/, { error: false, encryptedString: encryptedString }];
                 case 2:

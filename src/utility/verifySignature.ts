@@ -181,12 +181,12 @@ function convertPayloadToBase64(encryptedMessage: string, hmac: string, iv: stri
   return returnPayloadBase64
 }
 
-export function aes256GcmEncrypt(key: Buffer, plaintext: Buffer) {
+export function aes256GcmEncrypt(key: Buffer, plaintext: string) {
   var nonce = crypto.randomBytes(12)
   var cipher = crypto.createCipheriv("aes-256-gcm", key, nonce, {
     authTagLength: 128 / 8,
   })
-  var cypherText = cipher.update(plaintext) + cipher.final("base64")
+  var cypherText = cipher.update(plaintext, "utf8", "base64") + cipher.final("base64")
   const authTag = cipher.getAuthTag()
 
   const authTagBase64 = authTag.toString("base64")
@@ -219,7 +219,7 @@ export function getSharedKey(publicKey: Buffer, privateKey: Buffer) {
 }
 
 
-export const encryptData = async (data: string, header: any, privateKey: any,domain: string = "ONDC:FIS10") => {
+export const encryptData = async (data: string, header: any, privateKey: any, domain: string = "ONDC:FIS10") => {
   try {
     log.debug("Encrypting data", "encryptData", { data, header, domain })
     const headerParts = split_auth_header(header)
@@ -229,19 +229,19 @@ export const encryptData = async (data: string, header: any, privateKey: any,dom
     const subscriber_id = keyIdSplit[0]
     const unique_key_id = keyIdSplit[1]
     const publicKey = await getEncryptionPublicKey(subscriber_id, unique_key_id, domain)
-    if(!publicKey) {
-      log.warn("Error getting public key", "encryptData", {publicKey})
-      return {error: true} as const
+    if (!publicKey) {
+      log.warn("Error getting public key", "encryptData", { publicKey })
+      return { error: true } as const
     }
-    log.debug("Public key", "encryptData", {publicKey})
+    log.debug("Public key", "encryptData", { publicKey })
     const sharedKey = getSharedKey(Buffer.from(publicKey, "base64"), Buffer.from(privateKey, "base64"))
-    log.debug("Shared key", "encryptData", {sharedKey})
-    const encryptedString = aes256GcmEncrypt(Buffer.from(sharedKey, "base64"), Buffer.from(data, "utf8"))
+    log.debug("Shared key", "encryptData", { sharedKey })
+    const encryptedString = aes256GcmEncrypt(Buffer.from(sharedKey, "base64"), data)
     log.debug("Encrypted String", "encryptData", { encryptedString })
-    return {error: false, encryptedString} as const
+    return { error: false, encryptedString } as const
   } catch (e: any) {
     log.error("Error in encrypting data", "encryptData", e, { message: e.message, data, header, domain })
-    return {error: true} as const
+    return { error: true } as const
   }
 }
 
