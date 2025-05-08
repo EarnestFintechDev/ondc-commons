@@ -84,8 +84,8 @@ export const lookupRegistry = async (subscriber_id: string, unique_key_id: strin
 
     if (!response) return false
 
-    console.log(response.data)
-    const public_key = await getProviderPublicKey(response.data, unique_key_id)
+    console.log(response)
+    const public_key = await getProviderPublicKey(response, unique_key_id)
     if (!public_key) {
       log.debug("No public key found", "lookup registry", { domain, subscriber_id, unique_key_id })
       return false

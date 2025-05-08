@@ -148,8 +148,8 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
                 response = _a.sent();
                 if (!response)
                     return [2 /*return*/, false];
-                console.log(response.data);
-                return [4 /*yield*/, getProviderPublicKey(response.data, unique_key_id)];
+                console.log(response);
+                return [4 /*yield*/, getProviderPublicKey(response, unique_key_id)];
             case 2:
                 public_key = _a.sent();
                 if (!public_key) {
