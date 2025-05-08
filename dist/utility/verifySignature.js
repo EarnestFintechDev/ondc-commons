@@ -141,7 +141,7 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "*", country: "IND", type: "BAP" };
+                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "std:080", country: "IND", type: "BAP" };
                 return [4 /*yield*/, (0, fethRequest_1.FetchRequest)(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)];
             case 1:
                 response = _a.sent();
@@ -171,7 +171,7 @@ var getEncryptionPublicKey = function (subscriber_id, unique_key_id, domain) { r
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "*", country: "IND", type: "BAP" };
+                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "std:080", country: "IND", type: "BAP" };
                 return [4 /*yield*/, (0, fethRequest_1.FetchRequest)(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)];
             case 1:
                 response = _a.sent();
