@@ -5,6 +5,7 @@ export declare const createSigningString: (message: string, created: string, exp
     expires: string;
     digest_base64: string;
 }>;
+export declare const lookupRegistry: (subscriber_id: string, unique_key_id: string, domain: string) => Promise<any>;
 export declare const verifySignature: (header: any, body: any) => Promise<boolean>;
 export declare function aes256GcmEncrypt(key: Buffer, plaintext: string): string;
 export declare function getSharedKey(publicKey: Buffer, privateKey: Buffer): string;

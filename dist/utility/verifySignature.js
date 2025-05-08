@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.aes256GcmDecrypt = exports.encryptData = exports.getSharedKey = exports.aes256GcmEncrypt = exports.verifySignature = exports.createSigningString = void 0;
+exports.aes256GcmDecrypt = exports.encryptData = exports.getSharedKey = exports.aes256GcmEncrypt = exports.verifySignature = exports.lookupRegistry = exports.createSigningString = void 0;
 var axios_1 = __importDefault(require("axios"));
 var lodash_1 = __importDefault(require("lodash"));
 var libsodium_wrappers_1 = __importDefault(require("libsodium-wrappers"));
@@ -153,18 +153,19 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
             case 2:
                 public_key = _a.sent();
                 if (!public_key) {
-                    postgres_backend_1.log.debug("No public key found", 'lookup registry', { domain: domain, subscriber_id: subscriber_id, unique_key_id: unique_key_id });
+                    postgres_backend_1.log.debug("No public key found", "lookup registry", { domain: domain, subscriber_id: subscriber_id, unique_key_id: unique_key_id });
                     return [2 /*return*/, false];
                 }
                 return [2 /*return*/, public_key];
             case 3:
                 err_2 = _a.sent();
-                postgres_backend_1.log.error("Error in lookup", 'lookupRegistry', err_2, { subscriber_id: subscriber_id, unique_key_id: unique_key_id, domain: domain });
+                postgres_backend_1.log.error("Error in lookup", "lookupRegistry", err_2, { subscriber_id: subscriber_id, unique_key_id: unique_key_id, domain: domain });
                 return [2 /*return*/, false];
             case 4: return [2 /*return*/];
         }
     });
 }); };
+exports.lookupRegistry = lookupRegistry;
 var getEncryptionPublicKey = function (subscriber_id, unique_key_id, domain) { return __awaiter(void 0, void 0, void 0, function () {
     var body, response, public_key, err_3;
     return __generator(this, function (_a) {
@@ -225,7 +226,7 @@ var verifySignature = function (header, body) { return __awaiter(void 0, void 0,
                 unique_key_id = keyIdSplit[1];
                 algorithm = keyIdSplit[2];
                 if (!(algorithm === headerParts.algorithm)) return [3 /*break*/, 3];
-                return [4 /*yield*/, lookupRegistry(subscriber_id, unique_key_id, domain)];
+                return [4 /*yield*/, (0, exports.lookupRegistry)(subscriber_id, unique_key_id, domain)];
             case 1:
                 public_key = _a.sent();
                 if (!public_key) return [3 /*break*/, 3];
