@@ -45,6 +45,7 @@ var lodash_1 = __importDefault(require("lodash"));
 var libsodium_wrappers_1 = __importDefault(require("libsodium-wrappers"));
 var postgres_backend_1 = require("@smoke-trees/postgres-backend");
 var crypto_1 = __importDefault(require("crypto"));
+var fethRequest_1 = require("./fethRequest");
 var createSigningString = function (message, created, expires) { return __awaiter(void 0, void 0, void 0, function () {
     var sodium, digest, digest_base64, signing_string;
     return __generator(this, function (_a) {
@@ -142,7 +143,7 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
             case 0:
                 _a.trys.push([0, 3, , 4]);
                 body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
-                return [4 /*yield*/, axios_1.default.post(process.env.GATEWAY_LOOKUP_URL || '', body)];
+                return [4 /*yield*/, (0, fethRequest_1.FetchRequest)(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)];
             case 1:
                 response = _a.sent();
                 if (!response)
