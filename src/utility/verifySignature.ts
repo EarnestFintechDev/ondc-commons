@@ -78,7 +78,7 @@ const getProviderEncryptionPublicKey = async (providers: any, keyId: string) => 
 
 export const lookupRegistry = async (subscriber_id: string, unique_key_id: string, domain: string) => {
   try {
-    const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" }
+    const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "*", country: "IND", type: "BAP" }
 
     const response = await FetchRequest(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)
 
@@ -100,14 +100,14 @@ export const lookupRegistry = async (subscriber_id: string, unique_key_id: strin
 
 const getEncryptionPublicKey = async (subscriber_id: string, unique_key_id: string, domain: string) => {
   try {
-    const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" }
+    const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "*", country: "IND", type: "BAP" }
 
-    const response = await axios.post(process.env.GATEWAY_LOOKUP_URL || "", body)
+    const response = await FetchRequest(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)
 
     if (!response) return false
 
-    console.log(response.data)
-    const public_key = await getProviderEncryptionPublicKey(response.data, unique_key_id)
+   console.log(response)
+   const public_key = await getProviderEncryptionPublicKey(response, unique_key_id)
     if (!public_key) {
       log.debug("No public key found", "lookup registry", { domain, subscriber_id, unique_key_id })
       return false

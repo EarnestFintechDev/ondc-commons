@@ -40,7 +40,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.aes256GcmDecrypt = exports.encryptData = exports.getSharedKey = exports.aes256GcmEncrypt = exports.verifySignature = exports.lookupRegistry = exports.createSigningString = void 0;
-var axios_1 = __importDefault(require("axios"));
 var lodash_1 = __importDefault(require("lodash"));
 var libsodium_wrappers_1 = __importDefault(require("libsodium-wrappers"));
 var postgres_backend_1 = require("@smoke-trees/postgres-backend");
@@ -142,7 +141,7 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
+                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "*", country: "IND", type: "BAP" };
                 return [4 /*yield*/, (0, fethRequest_1.FetchRequest)(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)];
             case 1:
                 response = _a.sent();
@@ -172,14 +171,14 @@ var getEncryptionPublicKey = function (subscriber_id, unique_key_id, domain) { r
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
-                return [4 /*yield*/, axios_1.default.post(process.env.GATEWAY_LOOKUP_URL || "", body)];
+                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "*", country: "IND", type: "BAP" };
+                return [4 /*yield*/, (0, fethRequest_1.FetchRequest)(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)];
             case 1:
                 response = _a.sent();
                 if (!response)
                     return [2 /*return*/, false];
-                console.log(response.data);
-                return [4 /*yield*/, getProviderEncryptionPublicKey(response.data, unique_key_id)];
+                console.log(response);
+                return [4 /*yield*/, getProviderEncryptionPublicKey(response, unique_key_id)];
             case 2:
                 public_key = _a.sent();
                 if (!public_key) {
