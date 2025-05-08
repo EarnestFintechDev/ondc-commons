@@ -76,27 +76,27 @@ const getProviderEncryptionPublicKey = async (providers: any, keyId: string) => 
   }
 }
 
-const lookupRegistry = async (subscriber_id: string, unique_key_id: string, domain: string) => {
+export const lookupRegistry = async (subscriber_id: string, unique_key_id: string, domain: string) => {
   try {
-    const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
+    const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" }
 
     const response = await FetchRequest(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)
 
-    if (!response) return false;
+    if (!response) return false
 
     console.log(response.data)
-    const public_key = await getProviderPublicKey(response.data, unique_key_id);
+    const public_key = await getProviderPublicKey(response.data, unique_key_id)
     if (!public_key) {
-      log.debug("No public key found", 'lookup registry', { domain, subscriber_id, unique_key_id })
-      return false;
+      log.debug("No public key found", "lookup registry", { domain, subscriber_id, unique_key_id })
+      return false
     }
 
-    return public_key;
+    return public_key
   } catch (err) {
-    log.error("Error in lookup", 'lookupRegistry', err, { subscriber_id, unique_key_id, domain })
-    return false;
+    log.error("Error in lookup", "lookupRegistry", err, { subscriber_id, unique_key_id, domain })
+    return false
   }
-};
+}
 
 const getEncryptionPublicKey = async (subscriber_id: string, unique_key_id: string, domain: string) => {
   try {
