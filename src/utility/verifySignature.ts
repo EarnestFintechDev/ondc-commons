@@ -3,6 +3,7 @@ import _ from 'lodash';
 import _sodium from 'libsodium-wrappers';
 import { log } from '@smoke-trees/postgres-backend';
 import crypto from 'crypto'
+import { FetchRequest } from "./fethRequest"
 
 export const createSigningString = async (message: string, created: string, expires: string) => {
   if (!created) created = Math.floor(new Date().getTime() / 1000).toString();
@@ -79,7 +80,7 @@ const lookupRegistry = async (subscriber_id: string, unique_key_id: string, doma
   try {
     const body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10" };
 
-    const response = await axios.post(process.env.GATEWAY_LOOKUP_URL || '', body);
+    const response = await FetchRequest(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)
 
     if (!response) return false;
 
