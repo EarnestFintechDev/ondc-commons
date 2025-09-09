@@ -48,7 +48,6 @@ var FetchRequest = function (url, method, body) { return __awaiter(void 0, void 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                postgres_backend_1.log.debug("Looking for body in utility/fetchRequest.ts -> ", body);
                 body = JSON.stringify(body);
                 return [4 /*yield*/, (0, Header_1.getHeader)(body)];
             case 1:
@@ -67,6 +66,7 @@ var FetchRequest = function (url, method, body) { return __awaiter(void 0, void 
                         }
                         return response.text();
                     })
+                        .then(function (data) { return postgres_backend_1.log.debug("Response from FetchRequest function", "FetchRequest", data); })
                         .catch(function (err) {
                         postgres_backend_1.log.error("Error coming from ".concat(url, " after calling FetchRequest function, this function available in utility/fetchRequest.ts -> "), JSON.stringify(err));
                         return err;
