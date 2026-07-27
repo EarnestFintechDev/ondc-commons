@@ -77,7 +77,7 @@ var verifyMessage = function (signedString, signingString, publicKey) { return _
             case 1:
                 _b.sent();
                 sodium = libsodium_wrappers_1.default;
-                privateKey = (_a = process.env.SIGNING_KEY) !== null && _a !== void 0 ? _a : '';
+                privateKey = (_a = process.env.SIGNING_KEY) !== null && _a !== void 0 ? _a : "";
                 result = sodium.crypto_sign_verify_detached(sodium.from_base64(signedString, libsodium_wrappers_1.default.base64_variants.ORIGINAL), signingString, sodium.from_base64(publicKey, libsodium_wrappers_1.default.base64_variants.ORIGINAL));
                 return [2 /*return*/, result];
             case 2:
@@ -91,10 +91,10 @@ var verifyHeader = function (headerParts, body, public_key) { return __awaiter(v
     var signing_string, verified;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, exports.createSigningString)(JSON.stringify(body), headerParts['created'], headerParts['expires'])];
+            case 0: return [4 /*yield*/, (0, exports.createSigningString)(JSON.stringify(body), headerParts["created"], headerParts["expires"])];
             case 1:
                 signing_string = (_a.sent()).signing_string;
-                return [4 /*yield*/, verifyMessage(headerParts['signature'], signing_string, public_key)];
+                return [4 /*yield*/, verifyMessage(headerParts["signature"], signing_string, public_key)];
             case 2:
                 verified = _a.sent();
                 return [2 /*return*/, verified];
@@ -105,9 +105,7 @@ var getProviderPublicKey = function (providers, keyId) { return __awaiter(void 0
     var provider;
     return __generator(this, function (_a) {
         try {
-            return [2 /*return*/, providers[0].signing_public_key
-                // console.log(providers)
-            ];
+            return [2 /*return*/, providers[0].signing_public_key];
             provider = lodash_1.default.find(providers, function (obj) { return obj.ukId == keyId && obj; });
             // console.log(provider)
             return [2 /*return*/, (provider === null || provider === void 0 ? void 0 : provider.signing_public_key) || false];
@@ -122,9 +120,7 @@ var getProviderEncryptionPublicKey = function (providers, keyId) { return __awai
     var provider;
     return __generator(this, function (_a) {
         try {
-            return [2 /*return*/, providers[0].encr_public_key
-                // console.log(providers)
-            ];
+            return [2 /*return*/, providers[0].encr_public_key];
             provider = lodash_1.default.find(providers, function (obj) { return obj.ukId == keyId && obj; });
             // console.log(provider)
             return [2 /*return*/, (provider === null || provider === void 0 ? void 0 : provider.encr_public_key) || false];
@@ -141,7 +137,13 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "std:080", country: "IND", type: "BAP" };
+                body = {
+                    subscriber_id: subscriber_id,
+                    domain: "ONDC:FIS10",
+                    city: "std:080",
+                    country: "IND",
+                    type: "BAP",
+                };
                 return [4 /*yield*/, (0, fethRequest_1.FetchRequest)(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)];
             case 1:
                 response = _a.sent();
@@ -152,13 +154,21 @@ var lookupRegistry = function (subscriber_id, unique_key_id, domain) { return __
             case 2:
                 public_key = _a.sent();
                 if (!public_key) {
-                    postgres_backend_1.log.debug("No public key found", "lookup registry", { domain: domain, subscriber_id: subscriber_id, unique_key_id: unique_key_id });
+                    postgres_backend_1.log.debug("No public key found", "lookup registry", {
+                        domain: domain,
+                        subscriber_id: subscriber_id,
+                        unique_key_id: unique_key_id,
+                    });
                     return [2 /*return*/, false];
                 }
                 return [2 /*return*/, public_key];
             case 3:
                 err_2 = _a.sent();
-                postgres_backend_1.log.error("Error in lookup", "lookupRegistry", err_2, { subscriber_id: subscriber_id, unique_key_id: unique_key_id, domain: domain });
+                postgres_backend_1.log.error("Error in lookup", "lookupRegistry", err_2, {
+                    subscriber_id: subscriber_id,
+                    unique_key_id: unique_key_id,
+                    domain: domain,
+                });
                 return [2 /*return*/, false];
             case 4: return [2 /*return*/];
         }
@@ -171,34 +181,48 @@ var getEncryptionPublicKey = function (subscriber_id, unique_key_id, domain) { r
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                body = { subscriber_id: subscriber_id, domain: "ONDC:FIS10", city: "std:080", country: "IND", type: "BAP" };
+                body = {
+                    subscriber_id: subscriber_id,
+                    domain: "ONDC:FIS10",
+                    city: "std:080",
+                    country: "IND",
+                    type: "BAP",
+                };
                 return [4 /*yield*/, (0, fethRequest_1.FetchRequest)(process.env.GATEWAY_LOOKUP_URL || "", "POST", body)];
             case 1:
                 response = _a.sent();
+                postgres_backend_1.log.debug("Response from lookup", "lookupRegistry", response);
                 if (!response)
                     return [2 /*return*/, false];
-                console.log(response);
                 return [4 /*yield*/, getProviderEncryptionPublicKey(response, unique_key_id)];
             case 2:
                 public_key = _a.sent();
                 if (!public_key) {
-                    postgres_backend_1.log.debug("No public key found", "lookup registry", { domain: domain, subscriber_id: subscriber_id, unique_key_id: unique_key_id });
+                    postgres_backend_1.log.debug("No public key found", "lookup registry", {
+                        domain: domain,
+                        subscriber_id: subscriber_id,
+                        unique_key_id: unique_key_id,
+                    });
                     return [2 /*return*/, false];
                 }
                 return [2 /*return*/, public_key];
             case 3:
                 err_3 = _a.sent();
-                postgres_backend_1.log.error("Error in lookup", "lookupRegistry", err_3, { subscriber_id: subscriber_id, unique_key_id: unique_key_id, domain: domain });
+                postgres_backend_1.log.error("Error in lookup", "lookupRegistry", err_3, {
+                    subscriber_id: subscriber_id,
+                    unique_key_id: unique_key_id,
+                    domain: domain,
+                });
                 return [2 /*return*/, false];
             case 4: return [2 /*return*/];
         }
     });
 }); };
 var remove_quotes = function (a) {
-    return a.replace(/^["'](.+(?=["']$))["']$/, '$1');
+    return a.replace(/^["'](.+(?=["']$))["']$/, "$1");
 };
 var split_auth_header = function (auth_header) {
-    var header = auth_header.replace('Signature ', '');
+    var header = auth_header.replace("Signature ", "");
     var re = /\s*([^=]+)=([^,]+)[,]?/g;
     var m;
     var parts = {};
@@ -217,10 +241,10 @@ var verifySignature = function (header, body) { return __awaiter(void 0, void 0,
                 _a.trys.push([0, 4, , 5]);
                 isValid = false;
                 domain = body.context.domain;
-                postgres_backend_1.log.debug("Verify Domain", 'verifySignature', { header: header, body: body });
+                postgres_backend_1.log.debug("Verify Domain", "verifySignature", { header: header, body: body });
                 headerParts = split_auth_header(header);
-                postgres_backend_1.log.debug('headerParts', 'verifySignature', { headerParts: headerParts });
-                keyIdSplit = headerParts['keyId'].split('|');
+                postgres_backend_1.log.debug("headerParts", "verifySignature", { headerParts: headerParts });
+                keyIdSplit = headerParts["keyId"].split("|");
                 subscriber_id = keyIdSplit[0];
                 unique_key_id = keyIdSplit[1];
                 algorithm = keyIdSplit[2];
@@ -236,7 +260,10 @@ var verifySignature = function (header, body) { return __awaiter(void 0, void 0,
             case 3: return [2 /*return*/, isValid];
             case 4:
                 err_4 = _a.sent();
-                postgres_backend_1.log.error('Error in verify signature', 'verifySignature', err_4, { header: header, body: body });
+                postgres_backend_1.log.error("Error in verify signature", "verifySignature", err_4, {
+                    header: header,
+                    body: body,
+                });
                 return [2 /*return*/, false];
             case 5: return [2 /*return*/];
         }
@@ -302,7 +329,10 @@ var encryptData = function (data, header, privateKey, domain) {
                 case 1:
                     publicKey = _a.sent();
                     if (!publicKey) {
-                        postgres_backend_1.log.warn("Error getting public key", "encryptData", { publicKey: publicKey });
+                        postgres_backend_1.log.warn("Error getting public key", "encryptData", {
+                            publicKey: publicKey,
+                            headerParts: headerParts,
+                        });
                         return [2 /*return*/, { error: true }];
                     }
                     postgres_backend_1.log.debug("Public key", "encryptData", { publicKey: publicKey });
@@ -313,7 +343,12 @@ var encryptData = function (data, header, privateKey, domain) {
                     return [2 /*return*/, { error: false, encryptedString: encryptedString }];
                 case 2:
                     e_1 = _a.sent();
-                    postgres_backend_1.log.error("Error in encrypting data", "encryptData", e_1, { message: e_1.message, data: data, header: header, domain: domain });
+                    postgres_backend_1.log.error("Error in encrypting data", "encryptData", e_1, {
+                        message: e_1.message,
+                        data: data,
+                        header: header,
+                        domain: domain,
+                    });
                     return [2 /*return*/, { error: true }];
                 case 3: return [2 /*return*/];
             }

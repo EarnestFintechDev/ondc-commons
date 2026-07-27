@@ -66,7 +66,10 @@ var FetchRequest = function (url, method, body) { return __awaiter(void 0, void 
                         }
                         return response.text();
                     })
-                        .then(function (data) { return postgres_backend_1.log.debug("Response from FetchRequest function", "FetchRequest", data); })
+                        .then(function (data) {
+                        postgres_backend_1.log.debug("Response from FetchRequest function", "FetchRequest", data);
+                        return data;
+                    })
                         .catch(function (err) {
                         postgres_backend_1.log.error("Error coming from ".concat(url, " after calling FetchRequest function, this function available in utility/fetchRequest.ts -> "), JSON.stringify(err));
                         return err;
